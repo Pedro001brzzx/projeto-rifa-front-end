@@ -1,0 +1,132 @@
+/* Campaign Form Styles */
+
+.campaign-form-modal {
+    background-color: white;
+    border-radius: 0.75rem;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.campaign-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
+
+.campaign-form-header h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2937;
+}
+
+.campaign-form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-input.error {
+    border-color: #ef4444;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.submit-error {
+    text-align: center;
+    padding: 0.75rem;
+    background-color: #fee2e2;
+    border-radius: 0.375rem;
+}
+
+/* Image Upload */
+
+.image-upload {
+    position: relative;
+}
+
+.image-input {
+    display: none;
+}
+
+.image-upload-label {
+    display: block;
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+
+.image-upload-label:hover {
+    border-color: #9333ea;
+    background-color: #f9fafb;
+}
+
+.image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6b7280;
+    gap: 0.5rem;
+}
+
+.image-hint {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* Form Actions */
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.form-actions .btn {
+    min-width: 120px;
+}
+
+/* Responsive */
+
+@media (max-width: 640px) {
+    .campaign-form-modal {
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}
