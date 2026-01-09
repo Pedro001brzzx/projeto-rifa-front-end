@@ -1129,7 +1129,9 @@ button {
 .footer-link {
   color: #9ca3af;
   background: none;
+  border: none;
   padding: 0;
+  cursor: pointer;
   transition: color 0.2s;
 }
 
@@ -1144,6 +1146,27 @@ button {
 .footer-copyright {
   color: #6b7280;
   font-size: 0.875rem;
+}
+
+.admin-access-hidden {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  margin-top: 0.5rem;
+  color: #1f2937;
+  opacity: 0.08;
+  font-size: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-access-hidden:hover {
+  opacity: 0.4;
+  transform: scale(1.5);
+}
+
+.admin-access-hidden:active {
+  opacity: 0.6;
 }
 
 
@@ -1506,21 +1529,38 @@ button {
 }
 
 .package-card {
-  background-color: #000;
+  background-color: #1f2937;
   color: white;
-  border-radius: 8px;
-  padding: 1rem 0.25rem;
+  border-radius: 10px;
+  padding: 1.15rem 0.5rem;
   text-align: center;
   cursor: pointer;
   position: relative;
   border: 2px solid transparent;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.package-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.package-card:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .package-card.selected {
   background-color: #d1fae5;
   color: #064e3b;
   border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.package-card.selected:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3), 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
 /* Hardcoded to show tag on first item for demo based on index logic usually, 
@@ -1750,20 +1790,36 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.quantity-control button:hover {
+  background-color: #f9fafb;
 }
 
 .quantity-control button:active {
-  background-color: #f3f4f6;
+  background-color: #e5e7eb;
+  transform: scale(0.95);
 }
 
 .quantity-control input {
-  width: 50px;
+  width: 70px;
   text-align: center;
   border: none;
   font-weight: bold;
   font-size: 1.125rem;
   color: #111827;
+  background-color: white;
   outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+.quantity-control input::-webkit-outer-spin-button,
+.quantity-control input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .participate-btn {
@@ -1779,11 +1835,18 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
+  transition: all 0.15s ease;
 }
 
 .participate-btn:hover {
   background-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.participate-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);
 }
 
 .btn-content {
@@ -1825,21 +1888,26 @@ button {
 
 .adjust-chip {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   /* Circle */
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   border: 1px solid #e5e7eb;
   background-color: white;
   color: #374151;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
+}
+
+.adjust-chip:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .adjust-chip:active {
@@ -1847,16 +1915,126 @@ button {
 }
 
 .adjust-chip.positive {
-  background-color: #ecfdf5;
-  color: #059669;
+  background-color: #d1fae5;
+  color: #065f46;
   border-color: #6ee7b7;
 }
 
 .adjust-chip.negative {
-  background-color: #fef2f2;
-  /* Red-50 */
-  color: #ef4444;
-  /* Red-500 */
+  background-color: #fee2e2;
+  color: #dc2626;
   border-color: #fca5a5;
-  /* Red-300 */
+}
+
+/* RESET QUANTITY BUTTON */
+.reset-quantity-btn {
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid #fca5a5;
+  background-color: #fef2f2;
+  color: #dc2626;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.reset-quantity-btn:hover {
+  transform: scale(1.05);
+  background-color: #fee2e2;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.reset-quantity-btn:active {
+  transform: scale(0.95);
+}
+
+
+/* ============================================
+   REGISTER PAGE - PHONE INPUT LIGHT THEME
+   ============================================ */
+
+/* Phone Input for Register Page - Light Theme */
+.phone-input-container-register {
+  width: 100%;
+}
+
+.phone-input-container-register .form-input,
+.phone-input-container-register input {
+  width: 100% !important;
+  padding: 0.85rem 1rem !important;
+  padding-left: 52px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.95rem !important;
+  color: #1f2937 !important;
+  background-color: white !important;
+  transition: all 0.2s !important;
+  font-family: inherit !important;
+}
+
+.phone-input-container-register .form-input:focus,
+.phone-input-container-register input:focus {
+  outline: none !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+}
+
+.phone-input-container-register .form-input::placeholder,
+.phone-input-container-register input::placeholder {
+  color: #9ca3af !important;
+}
+
+.phone-input-container-register .flag-dropdown {
+  background-color: white !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.5rem 0 0 0.5rem !important;
+}
+
+.phone-input-container-register .flag-dropdown:hover,
+.phone-input-container-register .flag-dropdown.open {
+  background-color: #f9fafb !important;
+}
+
+.phone-input-container-register .selected-flag {
+  width: 45px !important;
+  padding: 0 0 0 10px !important;
+}
+
+.phone-input-container-register .country-list {
+  background-color: white !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.5rem !important;
+  color: #1f2937 !important;
+  max-height: 200px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.phone-input-container-register .country-list .country:hover,
+.phone-input-container-register .country-list .country.highlight {
+  background-color: #f3f4f6 !important;
+}
+
+.phone-input-container-register .country-list .search {
+  background-color: #f9fafb !important;
+  color: #1f2937 !important;
+  border: none !important;
+  border-bottom: 1px solid #d1d5db !important;
+  padding: 0.5rem !important;
+}
+
+.phone-input-container-register .country-list .search::placeholder {
+  color: #9ca3af !important;
+}
+
+.phone-input-container-register .country-list .search:focus {
+  outline: none !important;
+  border-bottom-color: #10b981 !important;
 }

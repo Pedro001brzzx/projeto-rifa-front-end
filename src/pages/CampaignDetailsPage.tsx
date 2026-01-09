@@ -12,7 +12,8 @@ import {
     Minus,
     Plus,
     CheckCircle,
-    Award
+    Award,
+    RotateCcw
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -91,6 +92,10 @@ const CampaignDetailsPage: React.FC = () => {
             if (newValue > 10000) return 10000;
             return Math.max(1, newValue);
         });
+    };
+
+    const handleReset = () => {
+        setTicketQuantity(1);
     };
 
     if (loading) return <div className="loading-screen">Carregando...</div>;
@@ -249,6 +254,10 @@ const CampaignDetailsPage: React.FC = () => {
                                 {val > 0 ? `+${val}` : val}
                             </button>
                         ))}
+                        <button className="reset-quantity-btn" onClick={handleReset} title="Remover a quantidade de rifas">
+                            <RotateCcw size={16} />
+                            Limpar
+                        </button>
                     </div>
 
                     <div className="flex-row">

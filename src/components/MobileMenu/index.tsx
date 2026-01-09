@@ -18,30 +18,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
 
     if (!isOpen) return null;
 
-    const scrollToSection = (sectionId: string) => {
-        // Verificar se estamos na página principal
-        const isHomePage = window.location.pathname === '/';
 
-        if (isHomePage) {
-            // Se estamos na home, fazer scroll normalmente
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                onCloseMenu();
-            }
-        } else {
-            // Se estamos em outra página, navegar para home primeiro
-            navigate(`/#${sectionId}`);
-            onCloseMenu();
-            // Após navegação, fazer scroll
-            setTimeout(() => {
-                const element = document.getElementById(sectionId);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 100);
-        }
-    };
 
     const handleRegisterClick = () => {
         navigate('/register');
@@ -55,6 +32,21 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
 
     const handleCampaignsClick = () => {
         navigate('/campanhas');
+        onCloseMenu();
+    };
+
+    const handleTermsClick = () => {
+        navigate('/termos-de-uso');
+        onCloseMenu();
+    };
+
+    const handleContactClick = () => {
+        navigate('/contato');
+        onCloseMenu();
+    };
+
+    const handleWinnersClick = () => {
+        navigate('/ganhadores');
         onCloseMenu();
     };
 
@@ -82,15 +74,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
                         <UserPlus size={20} />
                         <span>Cadastro</span>
                     </button>
-                    <button className="mobile-nav-item">
+                    <button className="mobile-nav-item" onClick={handleWinnersClick}>
                         <Trophy size={20} />
                         <span>Ganhadores</span>
                     </button>
-                    <button className="mobile-nav-item">
+                    <button className="mobile-nav-item" onClick={handleTermsClick}>
                         <FileText size={20} />
                         <span>Termos de uso</span>
                     </button>
-                    <button className="mobile-nav-item">
+                    <button className="mobile-nav-item" onClick={handleContactClick}>
                         <Headphones size={20} />
                         <span>Suporte</span>
                     </button>

@@ -5,9 +5,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import type { RegisterFormData } from '../models/types';
-import { maskCPF, maskPhone, maskCEP, maskDate } from '../utils/masks';
-import { validateCPF, validateEmail, validatePhone, validateCEP } from '../utils/validators';
+import { maskCPF, maskCEP, maskDate } from '../utils/masks';
+import { validateCPF, validateEmail, validateCEP } from '../utils/validators';
 
 // Components
 import Header from '../components/Header';
@@ -75,7 +77,6 @@ const RegisterPage: React.FC = () => {
 
         let maskedValue = value;
         if (name === 'cpf') maskedValue = maskCPF(value);
-        if (name === 'phone' || name === 'phoneConfirmation') maskedValue = maskPhone(value);
         if (name === 'cep') maskedValue = maskCEP(value);
         if (name === 'birthDate') maskedValue = maskDate(value);
 
@@ -117,7 +118,7 @@ const RegisterPage: React.FC = () => {
 
         if (!formData.fullName.trim()) newErrors.fullName = 'Nome completo é obrigatório';
         if (!validateCPF(formData.cpf)) newErrors.cpf = 'CPF inválido';
-        if (!validatePhone(formData.phone)) newErrors.phone = 'Telefone inválido';
+        if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Telefone inválido';
         if (formData.phone !== formData.phoneConfirmation) newErrors.phoneConfirmation = 'Telefones não coincidem';
         if (!validateEmail(formData.email)) newErrors.email = 'Email inválido';
         if (!formData.birthDate) newErrors.birthDate = 'Data de nascimento é obrigatória';
@@ -259,26 +260,32 @@ const RegisterPage: React.FC = () => {
 
                             {/* Telefone */}
                             <div className="form-group">
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    className={`form-input ${errors.phone ? 'error' : ''}`}
-                                    placeholder="Telefone*"
+                                <PhoneInput
+                                    country={'br'}
                                     value={formData.phone}
-                                    onChange={handleChange}
+                                    onChange={(phone) => setFormData(prev => ({ ...prev, phone }))}
+                                    containerClass="phone-input-container-register"
+                                    inputClass="form-input"
+                                    buttonClass="phone-dropdown-button"
+                                    enableSearch={true}
+                                    searchPlaceholder="Buscar país..."
+                                    placeholder="Adicione seu numero"
                                 />
                                 {errors.phone && <span className="error-message">{errors.phone}</span>}
                             </div>
 
                             {/* Confirme o Telefone */}
                             <div className="form-group">
-                                <input
-                                    type="tel"
-                                    name="phoneConfirmation"
-                                    className={`form-input ${errors.phoneConfirmation ? 'error' : ''}`}
-                                    placeholder="Confirme o Telefone*"
+                                <PhoneInput
+                                    country={'br'}
                                     value={formData.phoneConfirmation}
-                                    onChange={handleChange}
+                                    onChange={(phone) => setFormData(prev => ({ ...prev, phoneConfirmation: phone }))}
+                                    containerClass="phone-input-container-register"
+                                    inputClass="form-input"
+                                    buttonClass="phone-dropdown-button"
+                                    enableSearch={true}
+                                    searchPlaceholder="Buscar país..."
+                                    placeholder="Confirme seu numero"
                                 />
                                 {errors.phoneConfirmation && <span className="error-message">{errors.phoneConfirmation}</span>}
                             </div>

@@ -4,8 +4,11 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Footer: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
         <footer className="footer">
             <div className="container">
@@ -27,19 +30,28 @@ const Footer: React.FC = () => {
 
                     {/* Links do Footer */}
                     <div className="footer-links">
-                        <button className="footer-link">Termos de uso</button>
+                        <button className="footer-link" onClick={() => navigate('/termos-de-uso')}>Termos de uso</button>
                         <span className="footer-separator">•</span>
                         <button className="footer-link">Política de privacidade</button>
                         <span className="footer-separator">•</span>
                         <button className="footer-link">Política de cookies</button>
                         <span className="footer-separator">•</span>
-                        <button className="footer-link">Ganhadores</button>
+                        <button className="footer-link" onClick={() => navigate('/ganhadores')}>Ganhadores</button>
                     </div>
 
                     {/* Copyright */}
                     <p className="footer-copyright">
                         2025 Gêmeos Brasil© - Todos os direitos reservados.
                     </p>
+
+                    {/* Hidden Admin Access */}
+                    <button
+                        className="admin-access-hidden"
+                        onClick={() => navigate('/admin')}
+                        title="Painel Administrativo"
+                    >
+                        admin only
+                    </button>
 
                     {/* Botão de App */}
                     <button className="btn btn-app">

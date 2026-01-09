@@ -11,6 +11,9 @@ import { useAuthContext } from './context/AuthContext';
 import HomePage from './pages/HomePage';
 import CampaignsPage from './pages/CampaignsPage';
 import RegisterPage from './pages/RegisterPage';
+import TermsPage from './pages/TermsPage';
+import ContactPage from './pages/ContactPage';
+import WinnersPage from './pages/WinnersPage';
 import AdminPanel from './components/AdminPanel';
 
 import CampaignDetailsPage from './pages/CampaignDetailsPage';
@@ -33,6 +36,9 @@ const AppRoutes: React.FC = () => {
                 <Route path="/campanhas" element={<CampaignsPage />} />
                 <Route path="/campanha/:id" element={<CampaignDetailsPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/termos-de-uso" element={<TermsPage />} />
+                <Route path="/contato" element={<ContactPage />} />
+                <Route path="/ganhadores" element={<WinnersPage />} />
                 <Route
                     path="/admin"
                     element={

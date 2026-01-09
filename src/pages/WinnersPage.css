@@ -1,0 +1,93 @@
+/* Winners Page Styles */
+
+.winners-page {
+    background-color: #f3f4f6;
+    min-height: 100vh;
+}
+
+.winners-main {
+    padding: 3rem 0;
+    min-height: calc(100vh - 200px);
+}
+
+.winners-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.winners-icon {
+    color: #f59e0b;
+}
+
+.winners-header h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1f2937;
+    margin: 0;
+}
+
+.winners-subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.winners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.no-winners {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #9ca3af;
+}
+
+.no-winners svg {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.no-winners p {
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .winners-main {
+        padding: 2rem 0;
+    }
+
+    .winners-header h1 {
+        font-size: 1.875rem;
+    }
+
+    .winners-subtitle {
+        font-size: 1rem;
+    }
+
+    .winners-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .winners-main {
+        padding: 1.5rem 0;
+    }
+
+    .winners-header {
+        margin-bottom: 2rem;
+    }
+
+    .winners-header h1 {
+        font-size: 1.5rem;
+    }
+}
