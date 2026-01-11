@@ -7,15 +7,20 @@ export interface Campaign {
     id: number;
     title: string;
     subtitle: string;
+    description?: string;
     image: string;
     status: 'active' | 'concluded';
-    badge?: string;
+    price: number;
+    totalTickets: number;
+    soldTickets: number;
+    availableTickets?: number;
+    soldPercentage?: number;
     code?: string;
+    prize?: string;
+    type?: string;
     date?: string;
-    price?: number;
-    totalTickets?: number;
-    soldTickets?: number;
-    description?: string;
+    slug?: string;
+    createdAt?: string;
 }
 
 export interface FAQ {
@@ -58,6 +63,8 @@ export interface RegisterFormData {
     phone: string;
     phoneConfirmation: string;
     email: string;
+    password: string;
+    confirmPassword: string;
     birthDate: string;
     cep: string;
     street: string;
@@ -68,3 +75,12 @@ export interface RegisterFormData {
     complement: string;
 }
 
+export interface Purchase {
+    id: number;
+    campaignId: number;
+    userId: number;
+    quantity: number;
+    totalAmount: number;
+    purchaseDate: string;
+    campaign?: Campaign;
+}

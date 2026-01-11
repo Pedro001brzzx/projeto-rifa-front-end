@@ -1,119 +1,101 @@
-/**
- * Authentication Service
- * Handles API calls for authentication and token management
- */
+// Serviço de Autenticação
+// Cole este arquivo em: src/services/authService.ts
 
-import type { User, AuthResponse } from '../models/types';
+import type { AxiosResponse } from 'axios';
+import api from './api';
+import type {
+    RegistroData,
+    LoginData,
+    AuthResponse,
+    Usuario,
+    MessageResponse
+} from '../types/api.types';
 
-// TODO: Configure this with your actual API URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-/**
- * Store JWT token in localStorage
- */
-export const setToken = (token: string): void => {
-    localStorage.setItem('auth_token', token);
-};
-
-/**
- * Get JWT token from localStorage
- */
-export const getToken = (): string | null => {
-    return localStorage.getItem('auth_token');
-};
-
-/**
- * Remove JWT token from localStorage
- */
-export const removeToken = (): void => {
-    localStorage.removeItem('auth_token');
-};
-
-/**
- * Decode JWT token to extract user information
- */
-export const decodeToken = (token: string): User | null => {
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return {
-            id: payload.id || payload.sub,
-            name: payload.name,
-            cpf: payload.cpf,
-            role: payload.role || 'user'
-        };
-    } catch (error) {
-        console.error('Error decoding token:', error);
-        return null;
-    }
-};
-
-/**
- * Login with phone and password
- */
-export const login = async (cpf: string, password: string): Promise<AuthResponse> => {
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ cpf, password }),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Login failed');
+export const authService = {
+    /**
+     * Registra um novo usuário
+     * @param dados - Dados do registro
+     * @returns Promise com resposta de autenticação
+     */
+    registro: async (dados: RegistroData): Promise<AxiosResponse<AuthResponse>> => {
+        const response = await api.post<AuthResponse>('/api/auth/registro', dados);
+        // Salvar token no localStorage
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
         }
+        return response;
+    },
 
-        const data: AuthResponse = await response.json();
-        setToken(data.token);
-        return data;
-    } catch (error) {
-        console.error('Login error:', error);
-        throw error;
-    }
+    /**
+     * Realiza login do usuário
+     * @param telefone - Telefone do usuário
+     * @param senha - Senha do usuário
+     * @returns Promise com resposta de autenticação
+     */
+    login: async (telefone: string, senha: string): Promise<AxiosResponse<AuthResponse>> => {
+        const loginData: LoginData = { telefone, senha };
+        const response = await api.post<AuthResponse>('/api/auth/login', loginData);
+        // Salvar token no localStorage
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+        }
+        return response;
+    },
+
+    /**
+     * Realiza logout do usuário
+     * @returns Promise void
+     */
+    logout: async (): Promise<void> => {
+        try {
+            await api.post<MessageResponse>('/api/auth/logout');
+        } finally {
+            // Sempre remove o token, mesmo se a requisição falhar
+            localStorage.removeItem('token');
+        }
+    },
+
+    /**
+     * Obtém perfil do usuário autenticado
+     * @returns Promise com dados do usuário
+     */
+    obterPerfil: async (): Promise<AxiosResponse<Usuario>> => {
+        return await api.get<Usuario>('/api/auth/perfil');
+    },
+
+    /**
+     * Atualiza perfil do usuário
+     * @param dados - Campos a atualizar
+     * @returns Promise com resposta contendo usuário atualizado
+     */
+    atualizarPerfil: async (dados: Partial<Usuario>): Promise<AxiosResponse<{ mensagem: string; usuario: Usuario }>> => {
+        return await api.put('/api/auth/perfil', dados);
+    },
+
+    /**
+     * Inicia processo de recuperação de senha
+     * @param telefone - Telefone do usuário
+     * @returns Promise com mensagem de resposta
+     */
+    recuperarSenha: async (telefone: string): Promise<AxiosResponse<MessageResponse>> => {
+        return await api.post<MessageResponse>('/api/auth/recuperar-senha', { telefone });
+    },
+
+    /**
+     * Verifica se usuário está autenticado
+     * @returns boolean indicando se está autenticado
+     */
+    isAuthenticated: (): boolean => {
+        return !!localStorage.getItem('token');
+    },
+
+    /**
+     * Obtém token do localStorage
+     * @returns Token JWT ou null
+     */
+    getToken: (): string | null => {
+        return localStorage.getItem('token');
+    },
 };
 
-/**
- * Logout and clear stored token
- */
-export const logout = (): void => {
-    removeToken();
-};
-
-/**
- * Get current user from stored token
- */
-export const getCurrentUser = (): User | null => {
-    const token = getToken();
-    if (!token) return null;
-    return decodeToken(token);
-};
-
-/**
- * Check if user is authenticated
- */
-export const isAuthenticated = (): boolean => {
-    return getToken() !== null;
-};
-
-/**
- * Check if user is admin
- */
-export const isAdmin = (): boolean => {
-    const user = getCurrentUser();
-    return user?.role === 'admin';
-};
-
-/**
- * Get authorization headers for API requests
- */
-export const getAuthHeaders = (): HeadersInit => {
-    const token = getToken();
-    if (!token) return {};
-
-    return {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    };
-};
+export default authService;

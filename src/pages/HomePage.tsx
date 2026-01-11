@@ -3,12 +3,19 @@
  * Main public-facing page with campaigns
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Services
+import { campanhaService } from '../services/campaignService';
+import { mapCampanhasToFrontend } from '../utils/mappers';
+
 // Models
-import { campaigns, faqs } from '../models/data';
+import { faqs } from '../models/data';
 import { winners } from '../models/winners';
+
+// Types
+import type { Campaign } from '../models/types';
 
 // Controllers (Hooks)
 import { useAuthContext } from '../context/AuthContext';
@@ -26,6 +33,10 @@ import Footer from '../components/Footer';
 
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const {
         cpf,
         password,
@@ -46,8 +57,31 @@ const HomePage: React.FC = () => {
         closeLoginModal
     } = useUI();
 
+    // Buscar campanhas da API
+    useEffect(() => {
+        const fetchCampaigns = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const response = await campanhaService.listarAtivas();
+                const frontendCampaigns = mapCampanhasToFrontend(response.data.campanhas);
+
+                setCampaigns(frontendCampaigns);
+            } catch (err) {
+                console.error('Erro ao buscar campanhas:', err);
+                setError('Não foi possível carregar as campanhas.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCampaigns();
+    }, []);
+
     // Handler para login que também fecha o modal
     const handleLoginSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!handleLogin) return;
         try {
             await handleLogin(e);
             closeLoginModal();
@@ -66,13 +100,13 @@ const HomePage: React.FC = () => {
             <LoginModal
                 isOpen={loginModalOpen}
                 onClose={closeLoginModal}
-                cpf={cpf}
-                password={password}
-                onCpfChange={setCpf}
-                onPasswordChange={setPassword}
+                cpf={cpf ?? ''}
+                password={password ?? ''}
+                onCpfChange={setCpf ?? (() => { })}
+                onPasswordChange={setPassword ?? (() => { })}
                 onLogin={handleLoginSubmit}
-                isLoading={authLoading}
-                error={authError}
+                isLoading={authLoading ?? false}
+                error={authError ?? null}
             />
 
             {/* Header com Menu Mobile */}
@@ -91,7 +125,17 @@ const HomePage: React.FC = () => {
             <HeroSection />
 
             {/* Lista de Campanhas */}
-            <CampaignsList campaigns={campaigns} />
+            {loading ? (
+                <div style={{ textAlign: 'center', padding: '3rem' }}>
+                    <p>Carregando campanhas...</p>
+                </div>
+            ) : error ? (
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#ef4444' }}>
+                    <p>{error}</p>
+                </div>
+            ) : (
+                <CampaignsList campaigns={campaigns} />
+            )}
 
             {/* Seção de Ganhadores */}
             <WinnersSection winners={winners} />

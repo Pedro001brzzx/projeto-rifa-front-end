@@ -3,11 +3,15 @@
  * Página dedicada apenas para listagem de campanhas
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Models
-import { campaigns } from '../models/data';
+// Services
+import { campanhaService } from '../services/campaignService';
+import { mapCampanhasToFrontend } from '../utils/mappers';
+
+// Types
+import type { Campaign } from '../models/types';
 
 // Controllers (Hooks)
 import { useAuthContext } from '../context/AuthContext';
@@ -22,6 +26,10 @@ import Footer from '../components/Footer';
 
 const CampaignsPage: React.FC = () => {
     const navigate = useNavigate();
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const {
         cpf,
         password,
@@ -42,8 +50,31 @@ const CampaignsPage: React.FC = () => {
         closeLoginModal
     } = useUI();
 
+    // Buscar campanhas na montagem do componente
+    useEffect(() => {
+        const fetchCampaigns = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const response = await campanhaService.listarAtivas();
+                const frontendCampaigns = mapCampanhasToFrontend(response.data.campanhas);
+
+                setCampaigns(frontendCampaigns);
+            } catch (err) {
+                console.error('Erro ao buscar campanhas:', err);
+                setError('Não foi possível carregar as campanhas. Tente novamente mais tarde.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCampaigns();
+    }, []);
+
     // Handler para login que também fecha o modal
     const handleLoginSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!handleLogin) return;
         try {
             await handleLogin(e);
             closeLoginModal();
@@ -62,13 +93,13 @@ const CampaignsPage: React.FC = () => {
             <LoginModal
                 isOpen={loginModalOpen}
                 onClose={closeLoginModal}
-                cpf={cpf}
-                password={password}
-                onCpfChange={setCpf}
-                onPasswordChange={setPassword}
+                cpf={cpf ?? ''}
+                password={password ?? ''}
+                onCpfChange={setCpf ?? (() => { })}
+                onPasswordChange={setPassword ?? (() => { })}
                 onLogin={handleLoginSubmit}
-                isLoading={authLoading}
-                error={authError}
+                isLoading={authLoading ?? false}
+                error={authError ?? null}
             />
 
             {/* Header com Menu Mobile */}
@@ -83,9 +114,25 @@ const CampaignsPage: React.FC = () => {
 
             <MobileMenu isOpen={mobileMenuOpen} onLoginClick={openLoginModal} onCloseMenu={toggleMobileMenu} />
 
-            {/* Main Content - Apenas Campanhas */}
+            {/* Main Content - Campanhas */}
             <main>
-                <CampaignsList campaigns={campaigns} />
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '3rem' }}>
+                        <p>Carregando campanhas...</p>
+                    </div>
+                ) : error ? (
+                    <div style={{ textAlign: 'center', padding: '3rem', color: '#ef4444' }}>
+                        <p>{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            style={{ marginTop: '1rem', padding: '0.5rem 1rem', cursor: 'pointer' }}
+                        >
+                            Tentar Novamente
+                        </button>
+                    </div>
+                ) : (
+                    <CampaignsList campaigns={campaigns} />
+                )}
             </main>
 
             {/* Rodapé */}

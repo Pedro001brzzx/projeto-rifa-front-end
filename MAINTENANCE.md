@@ -56,8 +56,38 @@ O projeto utiliza **CSS Vanilla** com uma estrutura organizada.
 
 ## 🐛 Debugging Comum
 
-- **Erro de CORS**: Verifique se a URL da API no `campaignService.ts` ou `authService.ts` está apontando corretamente para o backend.
+- **Erro de CORS**: ✅ **RESOLVIDO v1.1** - Configurado proxy Vite em `vite.config.ts`. Durante desenvolvimento, certifique-se de que `VITE_API_URL` não esteja definido no `.env` para permitir que o proxy funcione corretamente.
+- **Erro 401 no Login**: ✅ **RESOLVIDO v1.1** - O sistema agora remove automaticamente a formatação do telefone antes de enviar para autenticação.
+- **Admin não reconhecido**: ✅ **RESOLVIDO v1.1** - O `AuthContext` agora carrega o perfil completo e verifica tanto `is_admin` quanto `role` para compatibilidade com diferentes formatos de backend.
+- **Erro 400 ao criar campanha**: ✅ **RESOLVIDO v1.1** - O sistema agora gera slugs automaticamente a partir do título.
 - **Rotas 404**: Certifique-se de que o servidor web (em produção) esteja configurado para redirecionar todas as requisições para `index.html` (SPA routing).
+
+## 🔄 Atualizações da Versão 1.1
+
+### Configurações Importantes
+
+**Proxy de Desenvolvimento (vite.config.ts)**:
+```typescript
+server: {
+  proxy: {
+    '/api': {
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+      secure: false,
+    }
+  }
+}
+```
+
+**Variáveis de Ambiente (.env)**:
+- Se estiver usando o proxy, **comente** a linha `VITE_API_URL` para permitir requisições relativas.
+- Para builds de produção, defina `VITE_API_URL` com a URL completa da API.
+
+### Segurança e Validações
+
+- **Registro de Usuário**: Validação de senha (mínimo 6 caracteres e confirmação).
+- **Exclusão de Campanhas**: Bloqueio automático para campanhas com vendas associadas para manter integridade de dados.
+- **Autenticação**: Token JWT armazenado via `localStorage` e automáticamente anexado aos headers via interceptor Axios.
 
 ## 📦 Dependências
 

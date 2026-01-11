@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, LayoutGrid, Bell, CreditCard, UserPlus, Trophy, FileText, Headphones, LogIn } from 'lucide-react';
+import { Home, LayoutGrid, Bell, CreditCard, UserPlus, Trophy, FileText, Headphones, LogIn, LogOut } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -15,6 +16,7 @@ interface MobileMenuProps {
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMenu }) => {
     const navigate = useNavigate();
+    const { user, logout: handleLogout } = useAuth();
 
     if (!isOpen) return null;
 
@@ -50,6 +52,17 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
         onCloseMenu();
     };
 
+    const handleMyTicketsClick = () => {
+        navigate('/meus-titulos');
+        onCloseMenu();
+    };
+
+    const handleLogoutClick = async () => {
+        await handleLogout();
+        onCloseMenu();
+        navigate('/');
+    };
+
     return (
         <div className="mobile-menu">
             <div className="container">
@@ -66,7 +79,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
                         <Bell size={20} />
                         <span>Comunicados</span>
                     </button>
-                    <button className="mobile-nav-item">
+                    <button className="mobile-nav-item" onClick={handleMyTicketsClick}>
                         <CreditCard size={20} />
                         <span>Meus títulos</span>
                     </button>
@@ -87,11 +100,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
                         <span>Suporte</span>
                     </button>
 
-                    {/* Botão ENTRAR em Destaque */}
-                    <button onClick={onLoginClick} className="mobile-menu-login-btn">
-                        <LogIn size={20} />
-                        Entrar
-                    </button>
+                    {/* Conditional Login/Logout Button */}
+                    {user ? (
+                        <button onClick={handleLogoutClick} className="mobile-menu-logout-btn">
+                            <LogOut size={20} />
+                            Sair ({user.nome})
+                        </button>
+                    ) : (
+                        <button onClick={onLoginClick} className="mobile-menu-login-btn">
+                            <LogIn size={20} />
+                            Entrar
+                        </button>
+                    )}
                 </nav>
             </div>
         </div>

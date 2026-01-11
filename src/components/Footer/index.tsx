@@ -6,8 +6,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useAuthContext } from '../../context/AuthContext';
+
 const Footer: React.FC = () => {
     const navigate = useNavigate();
+    const { isAdmin } = useAuthContext();
 
     return (
         <footer className="footer">
@@ -37,21 +40,18 @@ const Footer: React.FC = () => {
                         <button className="footer-link">Política de cookies</button>
                         <span className="footer-separator">•</span>
                         <button className="footer-link" onClick={() => navigate('/ganhadores')}>Ganhadores</button>
+                        {isAdmin && (
+                            <>
+                                <span className="footer-separator">•</span>
+                                <button className="footer-link" onClick={() => navigate('/admin')}>Admin</button>
+                            </>
+                        )}
                     </div>
 
                     {/* Copyright */}
                     <p className="footer-copyright">
                         2025 Gêmeos Brasil© - Todos os direitos reservados.
                     </p>
-
-                    {/* Hidden Admin Access */}
-                    <button
-                        className="admin-access-hidden"
-                        onClick={() => navigate('/admin')}
-                        title="Painel Administrativo"
-                    >
-                        admin only
-                    </button>
 
                     {/* Botão de App */}
                     <button className="btn btn-app">

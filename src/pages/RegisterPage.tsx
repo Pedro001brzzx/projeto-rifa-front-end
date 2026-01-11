@@ -39,7 +39,8 @@ const RegisterPage: React.FC = () => {
         setCpf,
         setPassword,
         handleLogin,
-        handleLogout
+        handleLogout,
+        register
     } = useAuthContext();
 
     // UI State
@@ -58,6 +59,8 @@ const RegisterPage: React.FC = () => {
         phone: '',
         phoneConfirmation: '',
         email: '',
+        password: '',
+        confirmPassword: '',
         birthDate: '',
         cep: '',
         street: '',
@@ -121,6 +124,8 @@ const RegisterPage: React.FC = () => {
         if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Telefone inválido';
         if (formData.phone !== formData.phoneConfirmation) newErrors.phoneConfirmation = 'Telefones não coincidem';
         if (!validateEmail(formData.email)) newErrors.email = 'Email inválido';
+        if (!formData.password || formData.password.length < 6) newErrors.password = 'A senha deve ter pelo menos 6 caracteres';
+        if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'As senhas não coincidem';
         if (!formData.birthDate) newErrors.birthDate = 'Data de nascimento é obrigatória';
         if (!validateCEP(formData.cep)) newErrors.cep = 'CEP inválido';
         if (!formData.street.trim()) newErrors.street = 'Logradouro é obrigatório';
@@ -142,13 +147,35 @@ const RegisterPage: React.FC = () => {
 
         setLoading(true);
         try {
-            // TODO: Integrar com backend quando pronto
-            console.log('Dados do formulário:', formData);
-            alert('Cadastro realizado com sucesso!');
-            navigate('/');
-        } catch (error) {
+            // Preparar dados para envio à API
+            const registroData = {
+                nome: formData.fullName,
+                telefone: formData.phone.replace(/\D/g, ''), // Remove formatação
+                senha: formData.password, // Usar senha definida pelo usuário
+                email: formData.email,
+                cpf: formData.cpf.replace(/\D/g, ''), // Remove formatação
+                cidade: formData.city,
+                estado: formData.state
+            };
+
+            // Registrar usuário na API
+            if (register) {
+                await register(registroData);
+
+                alert('Cadastro realizado com sucesso! Você será redirecionado para a página inicial.');
+                navigate('/');
+            } else {
+                throw new Error('Serviço de registro não disponível');
+            }
+        } catch (error: any) {
             console.error('Erro ao cadastrar:', error);
-            alert('Erro ao realizar cadastro. Tente novamente.');
+
+            // Tratamento de erro específico
+            const errorMessage = error.response?.data?.mensagem
+                || error.message
+                || 'Erro ao realizar cadastro. Tente novamente.';
+
+            alert(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -175,6 +202,7 @@ const RegisterPage: React.FC = () => {
 
     // Handler para login que também fecha o modal
     const handleLoginSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!handleLogin) return;
         try {
             await handleLogin(e);
             closeLoginModal();
@@ -193,13 +221,13 @@ const RegisterPage: React.FC = () => {
             <LoginModal
                 isOpen={loginModalOpen}
                 onClose={closeLoginModal}
-                cpf={cpf}
-                password={password}
-                onCpfChange={setCpf}
-                onPasswordChange={setPassword}
+                cpf={cpf ?? ''}
+                password={password ?? ''}
+                onCpfChange={setCpf ?? (() => { })}
+                onPasswordChange={setPassword ?? (() => { })}
                 onLogin={handleLoginSubmit}
-                isLoading={authLoading}
-                error={authError}
+                isLoading={authLoading ?? false}
+                error={authError ?? null}
             />
 
             {/* Header com Menu Mobile */}
@@ -239,9 +267,10 @@ const RegisterPage: React.FC = () => {
                                     type="text"
                                     name="cpf"
                                     className={`form-input ${errors.cpf ? 'error' : ''}`}
-                                    placeholder="Informe seu CPF*"
+                                    placeholder="CPF* (Ex: 123.456.789-09)"
                                     value={formData.cpf}
                                     onChange={handleChange}
+                                    maxLength={14}
                                 />
                                 {errors.cpf && <span className="error-message">{errors.cpf}</span>}
                             </div>
@@ -301,6 +330,32 @@ const RegisterPage: React.FC = () => {
                                     onChange={handleChange}
                                 />
                                 {errors.email && <span className="error-message">{errors.email}</span>}
+                            </div>
+
+                            {/* Senha */}
+                            <div className="form-group">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    className={`form-input ${errors.password ? 'error' : ''}`}
+                                    placeholder="Senha*"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                />
+                                {errors.password && <span className="error-message">{errors.password}</span>}
+                            </div>
+
+                            {/* Confirmar Senha */}
+                            <div className="form-group">
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
+                                    placeholder="Confirme sua Senha*"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                />
+                                {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
                             </div>
 
                             {/* Data de Nascimento */}

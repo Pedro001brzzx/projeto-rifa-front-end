@@ -5,14 +5,14 @@
 
 import React, { useState } from 'react';
 import { X, Key, AlertTriangle, ArrowRight, Loader } from 'lucide-react';
-import { maskCPF } from '../../utils/masks';
+import { maskPhone } from '../../utils/masks';
 
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
-    cpf: string;
+    cpf: string; // Keep name for backward compatibility, but will contain phone
     password: string;
-    onCpfChange: (value: string) => void;
+    onCpfChange: (value: string) => void; // Keep name for backward compatibility
     onPasswordChange: (value: string) => void;
     onLogin: (e: React.MouseEvent<HTMLButtonElement>) => void;
     isLoading?: boolean;
@@ -34,12 +34,12 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
     if (!isOpen) return null;
 
-    const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onCpfChange(maskCPF(e.target.value));
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onCpfChange(maskPhone(e.target.value));
     };
 
     const handleContinue = () => {
-        if (cpf.length === 14) { // 11 numbers + mask chars
+        if (cpf.length >= 14) { // Phone with mask (XX) XXXXX-XXXX
             setStep(2);
         }
     };
@@ -77,15 +77,15 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
                     {step === 1 ? (
                         <>
-                            {/* Passo 1: CPF */}
+                            {/* Passo 1: Telefone */}
                             <div className="form-group">
                                 <input
-                                    type="text"
+                                    type="tel"
                                     value={cpf}
-                                    onChange={handleCpfChange}
+                                    onChange={handlePhoneChange}
                                     className="form-input"
-                                    placeholder="CPF*"
-                                    maxLength={14}
+                                    placeholder="Telefone*"
+                                    maxLength={15}
                                     autoFocus
                                 />
                             </div>
@@ -93,7 +93,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
                             {/* Alerta Amarelo */}
                             <div className="warning-box">
                                 <AlertTriangle size={20} className="warning-icon" />
-                                <span>Informe seu CPF para continuar</span>
+                                <span>Informe seu telefone para continuar</span>
                             </div>
 
                             {/* Botão Continuar */}

@@ -1,13 +1,9 @@
-/**
- * Admin Panel Component
- * Admin-only dashboard for campaign management
- */
-
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
-import { Plus, Edit, Trash2, AlertCircle } from 'lucide-react';
+import { Edit, Trash2, AlertCircle } from 'lucide-react';
 import type { Campaign } from '../../models/types';
-import * as campaignService from '../../services/campaignService';
+import { mapCampanhaToFrontend } from '../../utils/mappers';
+import campanhaService from '../../services/campaignService';
 import CampaignForm from '../CampaignForm';
 import ConfirmDialog from '../ConfirmDialog';
 import Notification from '../Notification';
@@ -30,45 +26,89 @@ const AdminPanel: React.FC = () => {
     const loadCampaigns = async () => {
         try {
             setIsLoading(true);
-            const data = await campaignService.getCampaigns();
-            setCampaigns(data);
+            const response = await campanhaService.listar({ per_page: 100 });
+            // Map API response to frontend model
+            const mappedCampaigns = response.data.campanhas.map(mapCampanhaToFrontend);
+            setCampaigns(mappedCampaigns);
         } catch (error) {
             showNotification('error', 'Erro ao carregar campanhas');
+            console.error(error);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleCreateCampaign = async (data: Omit<Campaign, 'id'>) => {
+    const handleCreateCampaign = async (data: any) => {
         try {
-            const newCampaign = await campaignService.createCampaign(data);
+            // Need to map frontend data back to backend format or assume service handles it if types match
+            // Typically we map back here. For now let's pass data and assume backend handles it or update later.
+            // Actually, let's look at what CampaignForm returns. 
+            // Assuming it returns object compatible with API for now or we map it.
+
+            // Map frontend keys to backend keys
+            const apiData = {
+                titulo: data.title,
+                slug: data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+                descricao: data.description,
+                imagem_principal: data.image || '',
+                valor_titulo: data.price,
+                total_titulos: data.totalTickets,
+                data_sorteio: data.date,
+                premio: data.prize || data.title,
+                tipo: data.type || 'regular'
+            };
+
+            const response = await campanhaService.criar(apiData as any);
+            const newCampaign = mapCampanhaToFrontend(response.data.campanha);
             setCampaigns([newCampaign, ...campaigns]);
             setShowForm(false);
             showNotification('success', 'Campanha criada com sucesso!');
         } catch (error) {
             showNotification('error', 'Erro ao criar campanha');
+            console.error(error);
         }
     };
 
-    const handleUpdateCampaign = async (id: number, data: Partial<Campaign>) => {
+    const handleUpdateCampaign = async (id: number, data: any) => {
         try {
-            const updated = await campaignService.updateCampaign(id, data);
+            const apiData = {
+                titulo: data.title,
+                slug: data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+                descricao: data.description,
+                imagem_principal: data.image,
+                valor_titulo: data.price,
+                total_titulos: data.totalTickets,
+                data_sorteio: data.date,
+                premio: data.prize,
+                tipo: data.type
+            };
+
+            const response = await campanhaService.atualizar(id, apiData as any);
+            const updated = mapCampanhaToFrontend(response.data.campanha);
             setCampaigns(campaigns.map(c => c.id === id ? updated : c));
             setEditingCampaign(null);
             showNotification('success', 'Campanha atualizada com sucesso!');
         } catch (error) {
             showNotification('error', 'Erro ao atualizar campanha');
+            console.error(error);
         }
     };
 
     const handleDeleteCampaign = async (id: number) => {
         try {
-            await campaignService.deleteCampaign(id);
+            await campanhaService.deletar(id);
             setCampaigns(campaigns.filter(c => c.id !== id));
             setDeleteConfirm(null);
             showNotification('success', 'Campanha excluída com sucesso!');
-        } catch (error) {
-            showNotification('error', 'Erro ao excluir campanha');
+        } catch (error: any) {
+            const backendError = error.response?.data?.erro || error.response?.data?.mensagem || '';
+
+            if (backendError.includes('compras associadas')) {
+                showNotification('error', '🔒 Bloqueado: Não é possível excluir campanhas que já possuem vendas.');
+            } else {
+                showNotification('error', backendError || 'Erro ao excluir campanha');
+            }
+            console.error(error);
         }
     };
 
@@ -89,86 +129,87 @@ const AdminPanel: React.FC = () => {
     }
 
     return (
-        <div className="admin-panel">
-            <div className="container">
-                {/* Header */}
-                <div className="admin-header">
-                    <div>
-                        <h1>Painel Administrativo</h1>
-                        <p>Gerencie todas as campanhas</p>
-                    </div>
+        <div className="admin-layout">
+            <aside className="admin-sidebar">
+                <div className="sidebar-header">
+                    <h2>Admin</h2>
+                </div>
+                <nav className="sidebar-nav">
+                    <button className="nav-item active">Campanhas</button>
+                    <button className="nav-item">Usuários</button>
+                    <button className="nav-item">Relatórios</button>
+                    <button className="nav-item">Configurações</button>
+                </nav>
+            </aside>
+
+            <main className="admin-main">
+                <div className="admin-page-header">
+                    <h1>Gerenciamento de Campanhas</h1>
                     <button
-                        className="btn btn-primary"
+                        className="btn-add-campaign"
                         onClick={() => setShowForm(true)}
                     >
-                        <Plus size={20} />
-                        Nova Campanha
+                        + Adicionar Campanhas
                     </button>
                 </div>
 
-                {/* Statistics Cards */}
-                <div className="admin-stats">
-                    <div className="stat-card">
-                        <h3>{campaigns.length}</h3>
-                        <p>Total de Campanhas</p>
-                    </div>
-                    <div className="stat-card">
-                        <h3>{campaigns.filter(c => c.status === 'active').length}</h3>
-                        <p>Campanhas Ativas</p>
-                    </div>
-                    <div className="stat-card">
-                        <h3>{campaigns.filter(c => c.status === 'concluded').length}</h3>
-                        <p>Campanhas Concluídas</p>
-                    </div>
-                </div>
-
-                {/* Campaigns Table */}
-                <div className="admin-content">
-                    <h2>Campanhas</h2>
+                <div className="admin-content-card">
                     {isLoading ? (
-                        <div className="loading">Carregando...</div>
-                    ) : campaigns.length === 0 ? (
-                        <div className="empty-state">
-                            <p>Nenhuma campanha encontrada</p>
-                        </div>
+                        <div className="loading-state">Carregando campanhas...</div>
                     ) : (
-                        <div className="campaigns-table">
-                            {campaigns.map((campaign) => (
-                                <div key={campaign.id} className="campaign-row">
-                                    <div className="campaign-row-image">
-                                        <img src={campaign.image} alt={campaign.title} />
-                                    </div>
-                                    <div className="campaign-row-info">
-                                        <h3>{campaign.title}</h3>
-                                        <p>{campaign.subtitle}</p>
-                                        <span className={`status-badge status-${campaign.status}`}>
-                                            {campaign.status === 'active' ? 'Ativa' : 'Concluída'}
-                                        </span>
-                                    </div>
-                                    <div className="campaign-row-actions">
-                                        <button
-                                            className="btn-icon btn-edit"
-                                            onClick={() => setEditingCampaign(campaign)}
-                                            title="Editar"
-                                        >
-                                            <Edit size={18} />
-                                        </button>
-                                        <button
-                                            className="btn-icon btn-delete"
-                                            onClick={() => setDeleteConfirm(campaign.id)}
-                                            title="Excluir"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="table-responsive">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Início</th>
+                                        <th>Fim</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {campaigns.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="empty-cell">Nenhuma campanha encontrada</td>
+                                        </tr>
+                                    ) : (
+                                        campaigns.map((campaign) => (
+                                            <tr key={campaign.id}>
+                                                <td className="cell-name">{campaign.title}</td>
+                                                <td>{campaign.createdAt ? new Date(campaign.createdAt).toLocaleDateString('pt-BR') : '-'}</td>
+                                                <td>{campaign.date ? new Date(campaign.date).toLocaleDateString('pt-BR') : '-'}</td>
+                                                <td>
+                                                    <span className={`status-pill status-${campaign.status === 'active' ? 'ativo' : 'inativo'}`}>
+                                                        {campaign.status === 'active' ? 'Ativa' : 'Inativa'}
+                                                    </span>
+                                                </td>
+                                                <td className="cell-actions">
+                                                    <button
+                                                        className="action-btn edit"
+                                                        onClick={() => setEditingCampaign(campaign)}
+                                                        title="Editar"
+                                                    >
+                                                        <Edit size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="action-btn delete"
+                                                        onClick={() => setDeleteConfirm(campaign.id)}
+                                                        title="Excluir"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </div>
-            </div>
+            </main>
 
-            {/* Modals */}
             {showForm && (
                 <CampaignForm
                     onSubmit={handleCreateCampaign}

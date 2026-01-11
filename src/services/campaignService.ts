@@ -1,142 +1,84 @@
-/**
- * Campaign Service
- * Handles API calls for campaign CRUD operations
- */
+// Serviço de Campanhas
+// Cole este arquivo em: src/services/campanhaService.ts
 
-import type { Campaign } from '../models/types';
-import { getAuthHeaders } from './authService';
+import type { AxiosResponse } from 'axios';
+import api from './api';
+import type {
+    Campanha,
+    CampanhaListResponse,
+    CampanhaParams,
+    CriarCampanhaData,
+    MessageResponse
+} from '../types/api.types';
 
-// TODO: Configure this with your actual API URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const campanhaService = {
+    /**
+     * Lista campanhas com filtros e paginação
+     * @param params - Parâmetros de filtro e paginação
+     * @returns Promise com lista de campanhas
+     */
+    listar: async (params: CampanhaParams = {}): Promise<AxiosResponse<CampanhaListResponse>> => {
+        const defaultParams: CampanhaParams = {
+            status: 'ativo',
+            page: 1,
+            per_page: 20,
+            ...params,
+        };
+        return await api.get<CampanhaListResponse>('/api/campanhas', { params: defaultParams });
+    },
 
-/**
- * Get all campaigns
- */
-export const getCampaigns = async (): Promise<Campaign[]> => {
-    try {
-        const response = await fetch(`${API_URL}/campaigns`);
+    /**
+     * Obtém detalhes de uma campanha pelo slug
+     * @param slug - Slug da campanha
+     * @returns Promise com dados da campanha
+     */
+    obterDetalhes: async (slug: string): Promise<AxiosResponse<Campanha>> => {
+        return await api.get<Campanha>(`/api/campanhas/${slug}`);
+    },
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch campaigns');
-        }
+    /**
+     * Cria uma nova campanha (admin only)
+     * @param dados - Dados da campanha
+     * @returns Promise com campanha criada
+     */
+    criar: async (dados: CriarCampanhaData): Promise<AxiosResponse<{ mensagem: string; campanha: Campanha }>> => {
+        return await api.post('/api/campanhas', dados);
+    },
 
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching campaigns:', error);
-        throw error;
-    }
+    /**
+     * Atualiza uma campanha existente (admin only)
+     * @param campanhaId - ID da campanha
+     * @param dados - Dados para atualizar
+     * @returns Promise com campanha atualizada
+     */
+    atualizar: async (campanhaId: number, dados: Partial<CriarCampanhaData>): Promise<AxiosResponse<{ mensagem: string; campanha: Campanha }>> => {
+        return await api.put(`/api/campanhas/${campanhaId}`, dados);
+    },
+
+    /**
+     * Deleta uma campanha (admin only)
+     * @param campanhaId - ID da campanha
+     * @returns Promise com mensagem de sucesso
+     */
+    deletar: async (campanhaId: number): Promise<AxiosResponse<MessageResponse>> => {
+        return await api.delete<MessageResponse>(`/api/campanhas/${campanhaId}`);
+    },
+
+    /**
+     * Filtra campanhas ativas
+     * @returns Promise com campanhas ativas
+     */
+    listarAtivas: async (): Promise<AxiosResponse<CampanhaListResponse>> => {
+        return await campanhaService.listar({ status: 'ativo' });
+    },
+
+    /**
+     * Filtra campanhas concluídas
+     * @returns Promise com campanhas concluídas
+     */
+    listarConcluidas: async (): Promise<AxiosResponse<CampanhaListResponse>> => {
+        return await campanhaService.listar({ status: 'concluido' });
+    },
 };
 
-/**
- * Get campaign by ID
- */
-export const getCampaignById = async (id: number): Promise<Campaign> => {
-    try {
-        const response = await fetch(`${API_URL}/campaigns/${id}`);
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch campaign');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching campaign:', error);
-        throw error;
-    }
-};
-
-/**
- * Create a new campaign (admin only)
- */
-export const createCampaign = async (campaignData: Omit<Campaign, 'id'>): Promise<Campaign> => {
-    try {
-        const response = await fetch(`${API_URL}/campaigns`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(campaignData),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to create campaign');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Error creating campaign:', error);
-        throw error;
-    }
-};
-
-/**
- * Update an existing campaign (admin only)
- */
-export const updateCampaign = async (id: number, campaignData: Partial<Campaign>): Promise<Campaign> => {
-    try {
-        const response = await fetch(`${API_URL}/campaigns/${id}`, {
-            method: 'PUT',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(campaignData),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to update campaign');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Error updating campaign:', error);
-        throw error;
-    }
-};
-
-/**
- * Delete a campaign (admin only)
- */
-export const deleteCampaign = async (id: number): Promise<void> => {
-    try {
-        const response = await fetch(`${API_URL}/campaigns/${id}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to delete campaign');
-        }
-    } catch (error) {
-        console.error('Error deleting campaign:', error);
-        throw error;
-    }
-};
-
-/**
- * Upload campaign image
- */
-export const uploadImage = async (file: File): Promise<string> => {
-    try {
-        const formData = new FormData();
-        formData.append('image', file);
-
-        const authHeaders = getAuthHeaders();
-        const response = await fetch(`${API_URL}/campaigns/upload`, {
-            method: 'POST',
-            headers: {
-                ...authHeaders,
-                // Remove Content-Type to let browser set it with boundary for FormData
-            },
-            body: formData,
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to upload image');
-        }
-
-        const data = await response.json();
-        return data.imageUrl;
-    } catch (error) {
-        console.error('Error uploading image:', error);
-        throw error;
-    }
-};
+export default campanhaService;

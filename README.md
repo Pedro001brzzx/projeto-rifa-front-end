@@ -1,6 +1,12 @@
 # Projeto Rifas - Frontend
 
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![React](https://img.shields.io/badge/React-19-61DAFB.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6.svg)
+
 Este é o frontend da plataforma de rifas online, desenvolvido com tecnologias modernas para garantir alta performance, responsividade e uma excelente experiência de usuário.
+
+> 📋 **Novidades da v1.1.0**: Veja o [CHANGELOG.md](CHANGELOG.md) para detalhes sobre as últimas melhorias.
 
 ## 🚀 Tecnologias Utilizadas
 

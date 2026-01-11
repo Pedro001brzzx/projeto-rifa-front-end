@@ -14,7 +14,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate(`/campanha/${campaign.id}`);
+        navigate(`/campanha/${campaign.slug || campaign.id}`);
     };
 
     return (

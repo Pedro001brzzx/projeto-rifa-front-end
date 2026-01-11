@@ -4,9 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { X, Upload } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { Campaign } from '../../models/types';
-import * as campaignService from '../../services/campaignService';
 import './CampaignForm.css';
 
 interface CampaignFormProps {
@@ -29,10 +28,6 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
     const [regulamento, setRegulamento] = useState('');
     const [status, setStatus] = useState<'active' | 'concluded'>(campaign?.status || 'active');
 
-    // Image states
-    const [imagemPrincipalFile, setImagemPrincipalFile] = useState<File | null>(null);
-    const [imagemPrincipalPreview, setImagemPrincipalPreview] = useState(campaign?.image || '');
-
     const [isUploading, setIsUploading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -53,24 +48,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
         }
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
 
-        if (!file.type.startsWith('image/')) {
-            setErrors({ ...errors, imagem: 'Por favor, selecione uma imagem válida' });
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            setErrors({ ...errors, imagem: 'A imagem deve ter no máximo 5MB' });
-            return;
-        }
-
-        setImagemPrincipalFile(file);
-        setImagemPrincipalPreview(URL.createObjectURL(file));
-        setErrors({ ...errors, imagem: '' });
-    };
 
     const validate = (): boolean => {
         const newErrors: Record<string, string> = {};
@@ -78,7 +56,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
         if (!titulo.trim()) newErrors.titulo = 'Título é obrigatório';
         if (!slug.trim()) newErrors.slug = 'Slug é obrigatório';
         if (!descricao.trim()) newErrors.descricao = 'Descrição é obrigatória';
-        if (!campaign?.image && !imagemPrincipalFile) newErrors.imagem = 'Imagem é obrigatória';
+
         if (!valorTitulo.trim()) newErrors.valorTitulo = 'Valor do título é obrigatório';
         if (!totalTitulos.trim()) newErrors.totalTitulos = 'Total de títulos é obrigatório';
 
@@ -94,16 +72,10 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
         try {
             setIsUploading(true);
 
-            // Upload image if a new file was selected
-            let imageUrl = campaign?.image || '';
-            if (imagemPrincipalFile) {
-                imageUrl = await campaignService.uploadImage(imagemPrincipalFile);
-            }
-
             const campaignData: Omit<Campaign, 'id'> = {
                 title: titulo,
                 subtitle: descricao,
-                image: imageUrl,
+                image: '', // Image URL will come from backend
                 status,
                 code: codigo || undefined,
                 date: dataSorteio || undefined,
@@ -171,31 +143,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
                             {errors.descricao && <span className="error-message">{errors.descricao}</span>}
                         </div>
 
-                        {/* Imagem Principal */}
-                        <div className="form-group form-group-full">
-                            <label className="form-label">Imagem Principal *</label>
-                            <div className="image-upload">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="image-input"
-                                    id="image-upload"
-                                />
-                                <label htmlFor="image-upload" className="image-upload-label">
-                                    {imagemPrincipalPreview ? (
-                                        <img src={imagemPrincipalPreview} alt="Preview" className="image-preview" />
-                                    ) : (
-                                        <div className="image-placeholder">
-                                            <Upload size={32} />
-                                            <span>Clique para fazer upload</span>
-                                            <span className="image-hint">JPG ou PNG, máx. 5MB</span>
-                                        </div>
-                                    )}
-                                </label>
-                            </div>
-                            {errors.imagem && <span className="error-message">{errors.imagem}</span>}
-                        </div>
+                        {/* Imagem será gerenciada pelo backend */}
 
                         {/* Código */}
                         <div className="form-group">

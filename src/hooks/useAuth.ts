@@ -16,6 +16,21 @@ export const useAuth = () => {
 
     // Check if user is already authenticated on mount
     useEffect(() => {
+        // DEV MODE: Auto-login with mock user
+        const devMode = import.meta.env.VITE_DEV_MODE === 'true';
+
+        if (devMode) {
+            const mockUser: User = {
+                id: '1',
+                name: 'Usuário de Teste',
+                cpf: '12345678900',
+                role: 'user'
+            };
+            setUser(mockUser);
+            console.log('🔓 DEV MODE: Mock user automatically logged in');
+            return;
+        }
+
         const currentUser = authService.getCurrentUser();
         if (currentUser) {
             setUser(currentUser);

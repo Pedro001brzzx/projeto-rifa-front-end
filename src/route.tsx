@@ -14,9 +14,11 @@ import RegisterPage from './pages/RegisterPage';
 import TermsPage from './pages/TermsPage';
 import ContactPage from './pages/ContactPage';
 import WinnersPage from './pages/WinnersPage';
+import MyTicketsPage from './pages/MyTicketsPage';
 import AdminPanel from './components/AdminPanel';
 
 import CampaignDetailsPage from './pages/CampaignDetailsPage';
+
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { isAdmin } = useAuthContext();
@@ -34,11 +36,12 @@ const AppRoutes: React.FC = () => {
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/campanhas" element={<CampaignsPage />} />
-                <Route path="/campanha/:id" element={<CampaignDetailsPage />} />
+                <Route path="/campanha/:slug" element={<CampaignDetailsPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/termos-de-uso" element={<TermsPage />} />
                 <Route path="/contato" element={<ContactPage />} />
                 <Route path="/ganhadores" element={<WinnersPage />} />
+                <Route path="/meus-titulos" element={<MyTicketsPage />} />
                 <Route
                     path="/admin"
                     element={
