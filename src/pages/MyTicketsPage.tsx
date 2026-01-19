@@ -63,7 +63,9 @@ const MyTicketsPage: React.FC = () => {
                         subtitle: '',
                         image: compra.titulos[0].campanha.imagem_url,
                         status: compra.titulos[0].campanha.status === 'ativo' ? 'active' : 'concluded',
-                        price: compra.titulos[0].campanha.valor_titulo
+                        price: compra.titulos[0].campanha.valor_titulo,
+                        totalTickets: compra.titulos[0].campanha.total_titulos || 0,
+                        soldTickets: compra.titulos[0].campanha.titulos_vendidos || 0
                     } : undefined
                 }));
 

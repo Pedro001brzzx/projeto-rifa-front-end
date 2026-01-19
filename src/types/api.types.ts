@@ -127,6 +127,41 @@ export interface MeusTitulosResponse {
 }
 
 // ============================================
+// TIPOS DE TÍTULOS PREMIADOS
+// ============================================
+
+export interface TituloPremiado {
+    id: number;
+    campanha_id: number;
+    numero_titulo: string;
+    valor_premio: number;
+    ganhador_nome: string | null;
+    ganhador_usuario_id: number | null;
+    status: 'disponivel' | 'ganho';
+    data_sorteio: string | null;
+    criado_em: string;
+    atualizado_em: string;
+}
+
+export interface TitulosPremiadosResponse {
+    titulos_premiados: TituloPremiado[];
+    total: number;
+    ganhos: number;
+    disponiveis: number;
+}
+
+export interface AdicionarTituloPremiadoData {
+    numero_titulo: string;
+    valor_premio: number;
+}
+
+export interface MarcarGanhadorData {
+    ganhador_nome: string;
+    ganhador_usuario_id?: number;
+    data_sorteio?: string;
+}
+
+// ============================================
 // TIPOS GENÉRICOS
 // ===========================================
 

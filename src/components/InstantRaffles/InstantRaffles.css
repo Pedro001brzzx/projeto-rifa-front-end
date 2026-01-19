@@ -1,0 +1,206 @@
+/* ============================================
+   INSTANT RAFFLES SECTION STYLES
+   ============================================ */
+
+.instant-raffles-section {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.raffles-subsection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.raffles-subsection .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.raffles-subsection .section-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.subsection-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #9ca3af;
+    margin-left: 0.25rem;
+}
+
+.badge-count {
+    background-color: #10b981;
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Combos Grid */
+.combos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.combo-card {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+    transition: transform 0.2s;
+}
+
+.combo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3);
+}
+
+.combo-header {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.combo-label {
+    font-weight: 400;
+}
+
+.combo-titles {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.combo-price {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.95;
+}
+
+.combo-reward {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-top: 0.35rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.combo-chance {
+    font-size: 0.65rem;
+    opacity: 0.85;
+    line-height: 1.3;
+}
+
+/* Winners List */
+.winners-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.winner-item {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    border: 2px solid #d1d5db;
+    transition: all 0.2s;
+}
+
+.winner-item.won {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+}
+
+.winner-item.available {
+    border-color: #9ca3af;
+    background-color: #f9fafb;
+}
+
+.winner-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: left;
+}
+
+.winner-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1f2937;
+    text-align: right;
+}
+
+.winner-item.available .winner-name {
+    color: #6b7280;
+}
+
+/* Show More Button */
+.show-more-btn {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    border: 2px solid #374151;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    align-self: center;
+}
+
+.show-more-btn:hover {
+    background-color: #374151;
+    border-color: #4b5563;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .combos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .winner-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .winner-value,
+    .winner-name {
+        text-align: left;
+    }
+
+    .combo-card {
+        padding: 1.25rem;
+    }
+
+    .combo-titles {
+        font-size: 1.25rem;
+    }
+
+    .combo-reward {
+        font-size: 1rem;
+    }
+}

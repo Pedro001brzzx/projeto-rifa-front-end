@@ -19,9 +19,15 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import LoginModal from '../components/LoginModal';
 import MobileMenu from '../components/MobileMenu';
+import CheckoutModal from '../components/CheckoutModal';
+import PrizeTitles from '../components/PrizeTitles';
 import { useAuthContext } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import type { Campaign } from '../models/types';
+// TEMPORARILY DISABLED - Prize titles integration causing crash
+// import type { TituloPremiado } from '../types/api.types';
 import { campanhaService } from '../services/campaignService';
+// import { prizeTitlesService } from '../services/prizeTitlesService';
 import { mapCampanhaToFrontend } from '../utils/mappers';
 
 import '../App.css'; // Garantir estilos globais
@@ -44,9 +50,17 @@ const CampaignDetailsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [ticketQuantity, setTicketQuantity] = useState(1);
 
+    // TEMPORARILY DISABLED - Prize Titles State
+    // const [prizeTitles, setPrizeTitles] = useState<TituloPremiado[]>([]);
+    // const [prizeTitlesStats, setPrizeTitlesStats] = useState({ total: 0, ganhos: 0, disponiveis: 0 });
+
     // UI States
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+    // Get user from Auth Context
+    const { user, authenticated } = useAuth();
 
     // Calculate packages dynamically based on campaign price
     const getPackages = () => {
@@ -89,7 +103,24 @@ const CampaignDetailsPage: React.FC = () => {
             }
         };
 
+        // TEMPORARILY DISABLED - Prize Titles Fetch
+        // const fetchPrizeTitles = async () => {
+        //     if (!slug) return;
+        //     try {
+        //         const data = await prizeTitlesService.getPrizeTitles(slug);
+        //         setPrizeTitles(data.titulos_premiados);
+        //         setPrizeTitlesStats({
+        //             total: data.total,
+        //             ganhos: data.ganhos,
+        //             disponiveis: data.disponiveis
+        //         });
+        //     } catch (err) {
+        //         console.error('Erro ao buscar títulos premiados:', err);
+        //     }
+        // };
+
         fetchCampaign();
+        // fetchPrizeTitles();
     }, [slug]);
 
     const handlePackageSelect = (count: number) => {
@@ -117,6 +148,24 @@ const CampaignDetailsPage: React.FC = () => {
 
     const handleMyTicketsClick = () => {
         navigate('/meus-titulos');
+    };
+
+    const handleParticipateClick = () => {
+        // Check if user is authenticated
+        if (!authenticated || !user) {
+            setLoginModalOpen(true);
+            return;
+        }
+        // Open checkout modal
+        setCheckoutOpen(true);
+    };
+
+    const handleCheckoutComplete = (data: { quantity: number; totalPrice: number; bonuses: number[] }) => {
+        console.log('Checkout complete:', data);
+        // TODO: Implement purchase creation logic
+        // For now, just close the modal
+        setCheckoutOpen(false);
+        alert(`Reserva concluída! ${data.quantity} títulos por R$ ${data.totalPrice.toFixed(2).replace('.', ',')}`);
     };
 
     // Calculate total price dynamically
@@ -162,6 +211,17 @@ const CampaignDetailsPage: React.FC = () => {
                 error={authError ?? null}
             />
 
+            {campaign && (
+                <CheckoutModal
+                    isOpen={checkoutOpen}
+                    onClose={() => setCheckoutOpen(false)}
+                    campaign={campaign}
+                    quantity={ticketQuantity}
+                    user={user}
+                    onComplete={handleCheckoutComplete}
+                />
+            )}
+
             <main className="details-main">
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '3rem' }}>
@@ -183,109 +243,125 @@ const CampaignDetailsPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Hero Image */}
-                        <div className="details-hero">
-                            <img src={campaign.image} alt={campaign.title} className="details-image" />
-                            {campaign.status === 'active' && <div className="status-badge">Adquira Já!</div>}
-                        </div>
+                        {/* Hero Container - Wrapped in Box */}
+                        <div className="container">
+                            <div className="hero-container-box">
+                                {/* Hero Image */}
+                                <div className="details-hero">
+                                    <img src={campaign.image} alt={campaign.title} className="details-image" />
+                                    {campaign.status === 'active' && <div className="status-badge">Adquira Já!</div>}
+                                </div>
 
-                        {/* Title Section */}
-                        <div className="details-header container">
-                            <h1 className="details-title">{campaign.title}</h1>
-                            <p className="details-subtitle">{campaign.subtitle}</p>
-                        </div>
+                                {/* Title Section */}
+                                <div className="details-header">
+                                    <h1 className="details-title">{campaign.title}</h1>
+                                    <p className="details-subtitle">{campaign.subtitle}</p>
+                                </div>
 
-                        {/* My Titles Bar */}
-                        <div className="my-titles-bar" onClick={handleMyTicketsClick} style={{ cursor: 'pointer' }}>
-                            <div className="container flex-center">
-                                <ShoppingCart size={20} />
-                                <span>Meus títulos</span>
+                                {/* My Titles Bar */}
+                                <div className="my-titles-bar" onClick={handleMyTicketsClick} style={{ cursor: 'pointer' }}>
+                                    <div className="flex-center">
+                                        <ShoppingCart size={20} />
+                                        <span>Meus títulos</span>
+                                    </div>
+                                </div>
+
+                                {/* Stats Bar */}
+                                <div className="stats-bar">
+                                    <div className="price-tag">
+                                        <span>Por apenas</span>
+                                        <div className="price-value">R$ {campaign.price?.toFixed(2).replace('.', ',')}</div>
+                                    </div>
+
+                                    <button className="top-buyers-btn">
+                                        <Award size={18} />
+                                        Top Compradores Diário
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Stats Bar */}
-                        <div className="stats-bar container">
-                            <div className="price-tag">
-                                <span>Por apenas</span>
-                                <div className="price-value">R$ {campaign.price?.toFixed(2).replace('.', ',')}</div>
-                            </div>
-
-                            <button className="top-buyers-btn">
-                                <Award size={18} />
-                                Top Compradores Diário
-                            </button>
                         </div>
 
                         {/* Instructions */}
                         <div className="container">
-                            <div className="instruction-box">
-                                Quanto mais títulos, mais chances de ganhar!
+                            <div className="section-box">
+                                <div className="instruction-box">
+                                    Quanto mais títulos, mais chances de ganhar!
+                                </div>
                             </div>
                         </div>
 
                         {/* Packages Grid */}
                         <div className="container">
-                            <div className="packages-grid">
-                                {packages.map((pkg) => (
-                                    <div
-                                        key={pkg.count}
-                                        className={`package-card ${ticketQuantity === pkg.count ? 'selected' : ''}`}
-                                        onClick={() => handlePackageSelect(pkg.count)}
-                                    >
-                                        <div className="package-popular-tag">Mais popular</div>
-                                        <div className="package-count">+{pkg.count}</div>
-                                        <div className="package-price">R$ {pkg.price.toFixed(2).replace('.', ',')}</div>
-                                        <div className="package-action">SELECIONAR</div>
-                                    </div>
-                                ))}
+                            <div className="section-box">
+                                <div className="packages-grid">
+                                    {packages.map((pkg) => (
+                                        <div
+                                            key={pkg.count}
+                                            className={`package-card ${ticketQuantity === pkg.count ? 'selected' : ''}`}
+                                            onClick={() => handlePackageSelect(pkg.count)}
+                                        >
+                                            <div className="package-popular-tag">Mais popular</div>
+                                            <div className="package-count">+{pkg.count}</div>
+                                            <div className="package-price">R$ {pkg.price.toFixed(2).replace('.', ',')}</div>
+                                            <div className="package-action">SELECIONAR</div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
                         {/* Progress Section */}
-                        <div className="container progress-section">
-                            <div className="progress-bar-container">
-                                <div className="progress-bar" style={{ width: `${progress}%` }}>
-                                    {progress}%
+                        <div className="container">
+                            <div className="section-box">
+                                <div className="progress-bar-container">
+                                    <div className="progress-bar" style={{ width: `${progress}%` }}>
+                                        {progress}%
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="draw-info">
-                                <div className="draw-date">
-                                    <span>Sorteio</span>
-                                    <strong>{campaign.date || 'TBA'}</strong>
+                                <div className="draw-info">
+                                    <div className="draw-date">
+                                        <span>Sorteio</span>
+                                        <strong>{campaign.date || 'TBA'}</strong>
+                                    </div>
+                                    <div className="draw-price">
+                                        <span>Por apenas</span>
+                                        <div className="price-badge">R$ {campaign.price?.toFixed(2).replace('.', ',')}</div>
+                                    </div>
                                 </div>
-                                <div className="draw-price">
-                                    <span>Por apenas</span>
-                                    <div className="price-badge">R$ {campaign.price?.toFixed(2).replace('.', ',')}</div>
-                                </div>
-                            </div>
 
-                            {progress >= 100 && (
-                                <div className="warning-box-yellow">
-                                    Todos os títulos disponíveis já foram pagos ou reservados.
-                                </div>
-                            )}
+                                {progress >= 100 && (
+                                    <div className="warning-box-yellow">
+                                        Todos os títulos disponíveis já foram pagos ou reservados.
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Description Button */}
-                        <div className="container desc-btn-container">
-                            <button className="desc-btn">
-                                <ChevronDown size={20} />
-                                Descrição/Regulamento
-                            </button>
+                        <div className="container">
+                            <div className="section-box">
+                                <button className="desc-btn">
+                                    <ChevronDown size={20} />
+                                    Descrição/Regulamento
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Titulos Premiados List (Mock) */}
-                        <div className="container section-premiados">
-                            <div className="section-header">
-                                <h3>🏆 Títulos Premiados</h3>
-                                <span className="badge-green">0/5</span>
+                        {/* Prize Titles Section */}
+                        <div className="container">
+                            <div className="section-box">
+                                <PrizeTitles
+                                    prizes={[
+                                        { id: 1, campanha_id: 0, numero_titulo: "1111", valor_premio: 1000, ganhador_nome: "Maria", status: 'ganho', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
+                                        { id: 2, campanha_id: 0, numero_titulo: "222222", valor_premio: 1000, ganhador_nome: "Jackeline", status: 'ganho', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
+                                        { id: 3, campanha_id: 0, numero_titulo: "333333", valor_premio: 1000, ganhador_nome: "Sebastião", status: 'ganho', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
+                                        { id: 4, campanha_id: 0, numero_titulo: "444444", valor_premio: 1000, ganhador_nome: null, status: 'disponivel', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
+                                        { id: 5, campanha_id: 0, numero_titulo: "555555", valor_premio: 1000, ganhador_nome: null, status: 'disponivel', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
+                                    ]}
+                                    totalCount={5}
+                                    wonCount={3}
+                                />
                             </div>
-                            {[1, 2, 3, 4, 5].map(i => (
-                                <div className="award-item" key={i}>
-                                    <span className="award-value">R$1.000,00 REAIS</span>
-                                    <span className="award-status">Disponível</span>
-                                </div>
-                            ))}
                         </div>
                     </>
                 )}
@@ -318,7 +394,7 @@ const CampaignDetailsPage: React.FC = () => {
                                 <input type="text" value={ticketQuantity} readOnly />
                                 <button onClick={() => handleQuantityChange(1)}><Plus size={20} /></button>
                             </div>
-                            <button className="participate-btn">
+                            <button className="participate-btn" onClick={handleParticipateClick}>
                                 <div className="btn-content">
                                     <span className="btn-label"><CheckCircle size={16} /> Quero participar</span>
                                     <span className="btn-price">R$ {totalPrice.replace('.', ',')}</span>

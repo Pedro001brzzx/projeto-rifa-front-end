@@ -1,0 +1,104 @@
+/* ============================================
+   PRIZE TITLES SECTION STYLES
+   ============================================ */
+
+.prize-titles-section {
+    margin: 0;
+    background-color: transparent;
+}
+
+.prize-titles-section .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.prize-titles-section .section-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prize-titles-section .badge-count {
+    background-color: #10b981;
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.prize-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.prize-item {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    border: 2px solid #d1d5db;
+    transition: all 0.2s;
+}
+
+.prize-item.won {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+}
+
+.prize-item.available {
+    border-color: #9ca3af;
+    background-color: #f9fafb;
+}
+
+.prize-number {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: left;
+}
+
+.prize-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #059669;
+    text-align: center;
+}
+
+.prize-winner {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1f2937;
+    text-align: right;
+}
+
+.prize-item.available .prize-winner {
+    color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .prize-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: left;
+    }
+
+    .prize-number {
+        font-size: 1.125rem;
+    }
+
+    .prize-value,
+    .prize-winner {
+        text-align: left;
+    }
+}

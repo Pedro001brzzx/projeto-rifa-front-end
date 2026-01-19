@@ -1,0 +1,335 @@
+/* ============================================
+   CHECKOUT MODAL STYLES
+   ============================================ */
+
+.checkout-modal-content {
+    background-color: white;
+    border-radius: 0.75rem;
+    max-width: 600px;
+    width: 100%;
+    padding: 0;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Header */
+.checkout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.checkout-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.checkout-header-left svg {
+    color: #000;
+}
+
+.checkout-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: #000;
+}
+
+/* Success Box */
+.checkout-success-box {
+    background-color: #d1f4e0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.success-icon {
+    background-color: #10b981;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+    font-size: 0.875rem;
+}
+
+.checkout-success-box p {
+    margin: 0;
+    color: #065f46;
+    font-size: 0.938rem;
+    line-height: 1.5;
+}
+
+.checkout-success-box strong {
+    font-weight: 700;
+}
+
+/* Bonuses Section */
+.checkout-bonuses {
+    padding: 0 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.bonuses-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+}
+
+.bonuses-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0 0 1rem 0;
+    text-align: center;
+}
+
+.bonus-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.bonus-option {
+    background-color: #10b981;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.bonus-option:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.bonus-option.selected {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Toggle Switch */
+.bonus-toggle {
+    flex-shrink: 0;
+}
+
+.toggle-switch {
+    width: 48px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 14px;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.toggle-switch.active {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.toggle-slider {
+    width: 22px;
+    height: 22px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-slider {
+    transform: translateX(20px);
+    background-color: #10b981;
+}
+
+/* Bonus Info */
+.bonus-info {
+    flex: 1;
+    color: white;
+}
+
+.bonus-text {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.bonus-text strong {
+    font-weight: 700;
+}
+
+.bonus-reward {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* User Info */
+.checkout-user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background-color: #f9fafb;
+    margin: 0 1.5rem 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.user-avatar {
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 0.938rem;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 0.25rem;
+}
+
+.user-phone {
+    font-size: 0.813rem;
+    color: #6b7280;
+}
+
+/* Terms */
+.checkout-terms {
+    padding: 0 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.checkout-terms p {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.terms-link {
+    color: #10b981;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.terms-link:hover {
+    text-decoration: underline;
+}
+
+/* Action Buttons */
+.checkout-complete-btn {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: calc(100% - 3rem);
+    margin: 0 1.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.checkout-complete-btn:hover {
+    background-color: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-arrow {
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.checkout-change-account {
+    background: none;
+    border: none;
+    color: #10b981;
+    font-size: 0.938rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.75rem 1.5rem;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.checkout-change-account:hover {
+    text-decoration: underline;
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .checkout-modal-content {
+        max-width: 100%;
+        margin: 0.5rem;
+        max-height: 95vh;
+    }
+
+    .checkout-header {
+        padding: 1rem;
+    }
+
+    .checkout-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .checkout-success-box,
+    .checkout-bonuses,
+    .checkout-user-info,
+    .checkout-terms {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .checkout-complete-btn {
+        margin-left: 1rem;
+        margin-right: 1rem;
+        width: calc(100% - 2rem);
+    }
+
+    .bonus-option {
+        padding: 0.875rem;
+    }
+
+    .bonus-text {
+        font-size: 0.813rem;
+    }
+}

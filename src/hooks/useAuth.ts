@@ -1,11 +1,13 @@
 /**
  * Hook de Autenticação
  * Controller Layer - MVC Pattern
+ * 
+ * NOTE: This is a legacy hook. Consider using AuthContext instead.
  */
 
 import { useState, useEffect } from 'react';
 import type { User } from '../models/types';
-import * as authService from '../services/authService';
+import { authService } from '../services/authService';
 
 export const useAuth = () => {
     const [cpf, setCpf] = useState('');
@@ -31,10 +33,30 @@ export const useAuth = () => {
             return;
         }
 
-        const currentUser = authService.getCurrentUser();
-        if (currentUser) {
-            setUser(currentUser);
-        }
+        // Check if token exists and try to load user profile
+        const loadUser = async () => {
+            const token = authService.getToken();
+            if (token) {
+                try {
+                    const response = await authService.obterPerfil();
+                    const usuario = response.data;
+                    // Map API user to local User type
+                    const mappedUser: User = {
+                        id: usuario.id.toString(),
+                        name: usuario.nome,
+                        cpf: usuario.cpf,
+                        role: usuario.is_admin ? 'admin' : 'user'
+                    };
+                    setUser(mappedUser);
+                } catch (err) {
+                    console.error('Failed to load user:', err);
+                    // Token might be invalid, remove it
+                    await authService.logout();
+                }
+            }
+        };
+
+        loadUser();
     }, []);
 
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,10 +65,21 @@ export const useAuth = () => {
         setIsLoading(true);
 
         try {
+            // Use phone/telefone for login (the API uses telefone, but we accept cpf for backward compatibility)
             const response = await authService.login(cpf, password);
-            setUser(response.user);
+            const usuario = response.data.usuario;
+
+            // Map API user to local User type
+            const mappedUser: User = {
+                id: usuario.id.toString(),
+                name: usuario.nome,
+                cpf: usuario.cpf,
+                role: usuario.is_admin ? 'admin' : 'user'
+            };
+
+            setUser(mappedUser);
             clearLoginForm();
-            return response;
+            return response.data;
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Erro ao fazer login';
             setError(errorMessage);
@@ -57,8 +90,8 @@ export const useAuth = () => {
         }
     };
 
-    const handleLogout = () => {
-        authService.logout();
+    const handleLogout = async () => {
+        await authService.logout();
         setUser(null);
         clearLoginForm();
     };

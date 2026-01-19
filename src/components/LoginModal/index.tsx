@@ -3,7 +3,7 @@
  * View Layer - MVC Pattern
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Key, AlertTriangle, ArrowRight, Loader } from 'lucide-react';
 import { maskPhone } from '../../utils/masks';
 
@@ -30,31 +30,20 @@ const LoginModal: React.FC<LoginModalProps> = ({
     isLoading,
     error
 }) => {
-    const [step, setStep] = useState(1);
-
     if (!isOpen) return null;
 
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onCpfChange(maskPhone(e.target.value));
     };
 
-    const handleContinue = () => {
-        if (cpf.length >= 14) { // Phone with mask (XX) XXXXX-XXXX
-            setStep(2);
-        }
-    };
-
-    const handleClose = () => {
-        setStep(1);
-        onClose();
-    };
+    const isFormValid = cpf.length >= 14 && password.length > 0;
 
     return (
         <div className="modal-overlay">
             <div className="modal-content">
                 {/* Botão de Fechar */}
                 <button
-                    onClick={handleClose}
+                    onClick={onClose}
                     className="modal-close"
                 >
                     <X size={24} />
@@ -75,85 +64,59 @@ const LoginModal: React.FC<LoginModalProps> = ({
                         </div>
                     )}
 
-                    {step === 1 ? (
-                        <>
-                            {/* Passo 1: Telefone */}
-                            <div className="form-group">
-                                <input
-                                    type="tel"
-                                    value={cpf}
-                                    onChange={handlePhoneChange}
-                                    className="form-input"
-                                    placeholder="Telefone*"
-                                    maxLength={15}
-                                    autoFocus
-                                />
-                            </div>
+                    {/* Campo de Telefone */}
+                    <div className="form-group">
+                        <input
+                            type="tel"
+                            value={cpf}
+                            onChange={handlePhoneChange}
+                            className="form-input"
+                            placeholder="Telefone*"
+                            maxLength={15}
+                            autoFocus
+                        />
+                    </div>
 
-                            {/* Alerta Amarelo */}
-                            <div className="warning-box">
-                                <AlertTriangle size={20} className="warning-icon" />
-                                <span>Informe seu telefone para continuar</span>
-                            </div>
+                    {/* Campo de Senha */}
+                    <div className="form-group">
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => onPasswordChange(e.target.value)}
+                            className="form-input"
+                            placeholder="Senha*"
+                        />
+                    </div>
 
-                            {/* Botão Continuar */}
-                            <button
-                                onClick={handleContinue}
-                                className="btn btn-primary btn-full"
-                                disabled={cpf.length < 14}
-                            >
-                                Continuar
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            {/* Passo 2: Senha */}
-                            <p className="step-subtitle">Olá! Digite sua senha para entrar.</p>
+                    {/* Alerta Amarelo */}
+                    <div className="warning-box">
+                        <AlertTriangle size={20} className="warning-icon" />
+                        <span>Informe seu telefone e senha para continuar</span>
+                    </div>
 
-                            <div className="form-group">
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => onPasswordChange(e.target.value)}
-                                    className="form-input"
-                                    placeholder="Senha"
-                                    autoFocus
-                                />
-                            </div>
+                    {/* Link Esqueci Senha */}
+                    <button className="forgot-password" disabled={isLoading}>
+                        Esqueci minha senha
+                    </button>
 
-                            {/* Link Esqueci Senha */}
-                            <button className="forgot-password" disabled={isLoading}>
-                                Esqueci minha senha
-                            </button>
-
-                            {/* Botão Entrar */}
-                            <button
-                                onClick={onLogin}
-                                className="btn btn-primary btn-full"
-                                disabled={isLoading || !password}
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader size={18} className="spinner" />
-                                        Entrando...
-                                    </>
-                                ) : (
-                                    <>
-                                        Entrar
-                                        <ArrowRight size={18} style={{ marginLeft: '8px' }} />
-                                    </>
-                                )}
-                            </button>
-
-                            <button
-                                onClick={() => setStep(1)}
-                                className="btn btn-outline btn-full"
-                                style={{ marginTop: '1rem' }}
-                            >
-                                Voltar
-                            </button>
-                        </>
-                    )}
+                    {/* Botão Entrar */}
+                    <button
+                        onClick={onLogin}
+                        className="btn btn-primary btn-full"
+                        disabled={isLoading || !isFormValid}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader size={18} className="spinner" />
+                                Entrando...
+                            </>
+                        ) : (
+                            <>
+                                Entrar
+                                <ArrowRight size={18} style={{ marginLeft: '8px' }} />
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
         </div>
@@ -161,3 +124,4 @@ const LoginModal: React.FC<LoginModalProps> = ({
 };
 
 export default LoginModal;
+

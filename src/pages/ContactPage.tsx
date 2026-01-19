@@ -78,11 +78,11 @@ const ContactPage: React.FC = () => {
             <LoginModal
                 isOpen={loginModalOpen}
                 onClose={() => setLoginModalOpen(false)}
-                cpf={cpf}
-                password={password}
-                onCpfChange={setCpf}
-                onPasswordChange={setPassword}
-                onLogin={handleLogin}
+                cpf={cpf!}
+                password={password!}
+                onCpfChange={setCpf!}
+                onPasswordChange={setPassword!}
+                onLogin={handleLogin!}
                 isLoading={authLoading}
                 error={authError}
             />

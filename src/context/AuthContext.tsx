@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         loadUserProfile();
     }, []);
 
+
     const login = async (telefone: string, senha: string) => {
         try {
             setLoading(true);
@@ -110,15 +111,55 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setTelefone('');
             setPassword('');
             return loginResponse.data;
-        } catch (err) {
+        } catch (err: any) {
             setAuthenticated(false);
-            const errorMessage = err instanceof Error ? err.message : 'Erro ao fazer login';
+
+            // Map API errors to user-friendly messages
+            let errorMessage = 'Erro ao fazer login. Tente novamente.';
+
+            if (err.response) {
+                // The request was made and the server responded with a status code
+                const statusCode = err.response.status;
+
+                switch (statusCode) {
+                    case 401:
+                        errorMessage = 'Telefone ou senha incorretos';
+                        break;
+                    case 404:
+                        errorMessage = 'Usuário não encontrado';
+                        break;
+                    case 422:
+                        errorMessage = 'Dados inválidos. Verifique o telefone e senha';
+                        break;
+                    case 500:
+                        errorMessage = 'Erro no servidor. Tente novamente mais tarde';
+                        break;
+                    default:
+                        // Check if there's a message from the API
+                        if (err.response.data?.mensagem) {
+                            errorMessage = err.response.data.mensagem;
+                        } else if (err.response.data?.message) {
+                            errorMessage = err.response.data.message;
+                        } else {
+                            errorMessage = `Erro ${statusCode}. Tente novamente`;
+                        }
+                }
+            } else if (err.request) {
+                // The request was made but no response was received
+                errorMessage = 'Sem conexão com o servidor. Verifique sua internet';
+            } else if (err.message) {
+                // Something else happened while setting up the request
+                errorMessage = err.message;
+            }
+
+            console.error('Login error:', err);
             setError(errorMessage);
-            throw err;
+            throw new Error(errorMessage);
         } finally {
             setLoading(false);
         }
     };
+
 
     // Backward compatibility login handler
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
