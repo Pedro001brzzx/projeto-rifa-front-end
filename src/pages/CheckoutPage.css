@@ -1,0 +1,417 @@
+.checkout-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f5f7fa;
+}
+
+.checkout-main {
+    flex: 1;
+    padding: 48px 24px;
+}
+
+.checkout-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Loading State */
+.checkout-loading {
+    background: white;
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.checkout-loading .spinner {
+    animation: spin 1s linear infinite;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error State */
+.checkout-error {
+    background: white;
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.checkout-error svg {
+    color: #ff4757;
+    margin-bottom: 20px;
+}
+
+.checkout-error h2 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.checkout-error p {
+    color: #7f8c8d;
+    margin-bottom: 24px;
+}
+
+.checkout-error button {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.checkout-error button:hover {
+    background: #5568d3;
+}
+
+/* Expired State */
+.checkout-expired {
+    background: white;
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.expired-icon {
+    color: #ff6b6b;
+    margin-bottom: 20px;
+    animation: shake 0.5s ease-in-out;
+}
+
+.checkout-expired h1 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 32px;
+}
+
+.checkout-expired p {
+    color: #7f8c8d;
+    margin: 12px 0;
+}
+
+.expired-info {
+    background: #fff3cd;
+    color: #856404;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.checkout-expired button {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+}
+
+.checkout-expired button:hover {
+    background: #5568d3;
+}
+
+/* Success State */
+.checkout-success {
+    background: white;
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.success-icon {
+    color: #26de81;
+    margin-bottom: 20px;
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.checkout-success h1 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 32px;
+}
+
+.checkout-success p {
+    color: #7f8c8d;
+    margin: 12px 0;
+}
+
+.success-info {
+    background: #d4edda;
+    color: #155724;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+/* Header */
+.checkout-header {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.hourglass-icon {
+    font-size: 64px;
+    animation: flip 3s ease-in-out infinite;
+}
+
+@keyframes flip {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(180deg);
+    }
+}
+
+.checkout-header-text h1 {
+    color: #2c3e50;
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.checkout-header-text p {
+    color: #7f8c8d;
+    font-size: 16px;
+}
+
+/* Payment Instructions */
+.payment-instructions {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.instruction-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.step-number {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.instruction-step p {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 4px;
+}
+
+/* PIX Code */
+.pix-code-container {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.pix-code-input {
+    flex: 1;
+    padding: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    background: #f8f9fa;
+    color: #333;
+}
+
+.copy-button {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.copy-button:hover {
+    background: #229954;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.copy-button.copied {
+    background: #2ecc71;
+}
+
+/* QR Code Toggle */
+.qr-code-toggle {
+    width: 100%;
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background 0.3s;
+}
+
+.qr-code-toggle:hover {
+    background: #5568d3;
+}
+
+/* Warning */
+.payment-warning {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 12px;
+}
+
+.payment-warning svg {
+    color: #856404;
+    flex-shrink: 0;
+}
+
+.payment-warning p {
+    color: #856404;
+    margin: 0;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* Campaign Info */
+.campaign-info {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.campaign-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.campaign-details {
+    flex: 1;
+}
+
+.campaign-details h3 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.campaign-details p {
+    color: #7f8c8d;
+    margin-bottom: 12px;
+}
+
+.status-badge {
+    background: linear-gradient(135deg, #26de81 0%, #20bf6b 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: default;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .checkout-main {
+        padding: 24px 16px;
+    }
+
+    .checkout-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .hourglass-icon {
+        font-size: 48px;
+    }
+
+    .checkout-header-text h1 {
+        font-size: 24px;
+    }
+
+    .payment-instructions {
+        padding: 20px;
+    }
+
+    .pix-code-container {
+        flex-direction: column;
+    }
+
+    .campaign-info {
+        flex-direction: column;
+    }
+
+    .campaign-image {
+        width: 100%;
+        height: 200px;
+    }
+}

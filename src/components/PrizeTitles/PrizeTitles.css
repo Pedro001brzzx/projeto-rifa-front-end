@@ -11,42 +11,42 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .prize-titles-section .section-header h3 {
     margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     color: #1f2937;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .prize-titles-section .badge-count {
     background-color: #10b981;
     color: #ffffff;
-    padding: 0.25rem 0.75rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
 .prize-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.35rem;
 }
 
 .prize-item {
     display: grid;
-    grid-template-columns: 1fr 1.5fr 1fr;
+    grid-template-columns: 1fr 1.8fr 1.2fr;
     align-items: center;
-    padding: 0.75rem;
+    padding: 0.5rem 0.75rem;
     background-color: #ffffff;
-    border-radius: 0.5rem;
-    border: 2px solid #d1d5db;
+    border-radius: 0.4rem;
+    border: 1px solid #e5e7eb;
     transition: all 0.2s;
 }
 
@@ -56,49 +56,60 @@
 }
 
 .prize-item.available {
-    border-color: #9ca3af;
+    border-color: #e5e7eb;
     background-color: #f9fafb;
 }
 
 .prize-number {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    color: #1f2937;
+    color: #111827;
     text-align: left;
 }
 
 .prize-value {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #059669;
     text-align: center;
 }
 
+.prize-item.won .prize-value {
+    color: #059669;
+}
+
 .prize-winner {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #1f2937;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
     text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .prize-item.available .prize-winner {
-    color: #6b7280;
+    color: #9ca3af;
+    font-weight: 500;
 }
 
 /* Responsive */
 @media (max-width: 640px) {
     .prize-item {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-        text-align: left;
+        grid-template-columns: 1fr 1.8fr 1.2fr;
+        padding: 0.4rem 0.6rem;
+        gap: 0.25rem;
     }
 
     .prize-number {
-        font-size: 1.125rem;
+        font-size: 0.85rem;
     }
 
-    .prize-value,
+    .prize-value {
+        font-size: 0.75rem;
+    }
+
     .prize-winner {
-        text-align: left;
+        font-size: 0.75rem;
     }
 }

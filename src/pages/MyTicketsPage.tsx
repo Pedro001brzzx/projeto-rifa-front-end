@@ -52,20 +52,22 @@ const MyTicketsPage: React.FC = () => {
                 // Transform API response to match Purchase interface
                 const purchasesData: Purchase[] = response.data.compras.map((compra: any) => ({
                     id: compra.id,
-                    campaignId: compra.campanha_id,
+                    campaignId: compra.campanha?.id || compra.campanha_id,
                     userId: compra.usuario_id,
                     quantity: compra.quantidade_titulos,
                     totalAmount: compra.valor_total,
-                    purchaseDate: compra.data_compra,
-                    campaign: compra.titulos?.[0]?.campanha ? {
-                        id: compra.titulos[0].campanha.id,
-                        title: compra.titulos[0].campanha.titulo,
-                        subtitle: '',
-                        image: compra.titulos[0].campanha.imagem_url,
-                        status: compra.titulos[0].campanha.status === 'ativo' ? 'active' : 'concluded',
-                        price: compra.titulos[0].campanha.valor_titulo,
-                        totalTickets: compra.titulos[0].campanha.total_titulos || 0,
-                        soldTickets: compra.titulos[0].campanha.titulos_vendidos || 0
+                    purchaseDate: compra.criado_em, // Backend usa 'criado_em'
+                    status_pagamento: compra.status_pagamento,
+                    expira_em: compra.expira_em,
+                    campaign: compra.campanha ? {
+                        id: compra.campanha.id,
+                        title: compra.campanha.titulo,
+                        subtitle: compra.campanha.descricao || '',
+                        image: compra.campanha.imagem_principal, // Backend usa 'imagem_principal'
+                        status: compra.campanha.status === 'ativo' ? 'active' : 'concluded',
+                        price: compra.campanha.valor_titulo,
+                        totalTickets: compra.campanha.total_titulos || 0,
+                        soldTickets: compra.campanha.titulos_vendidos || 0
                     } : undefined
                 }));
 
@@ -102,12 +104,58 @@ const MyTicketsPage: React.FC = () => {
         });
     };
 
-    const handlePurchaseClick = (campaignId: number) => {
-        navigate(`/campanha/${campaignId}`);
+    const handlePurchaseClick = (purchaseId: number) => {
+        navigate(`/meus-titulos/${purchaseId}`);
     };
 
     const isCampaignExpired = (campaign: any): boolean => {
         return campaign?.status === 'concluded' || campaign?.status === 'expired';
+    };
+
+    const getStatusBadge = (purchase: Purchase) => {
+        // 1. Aprovado
+        if (purchase.status_pagamento === 'aprovado') {
+            return {
+                text: 'PAGAMENTO APROVADO',
+                className: 'status-aprovado'
+            };
+        }
+
+        // 2. Expirado (backend marcou como expirado)
+        if (purchase.status_pagamento === 'expirado') {
+            return {
+                text: 'TÍTULOS EXPIRADOS',
+                className: 'status-expirado'
+            };
+        }
+
+        // 3. Pendente - verificar se expirou no frontend
+        if (purchase.status_pagamento === 'pendente') {
+            // Se tem expira_em, verificar se expirou
+            if (purchase.expira_em) {
+                const expiraEm = new Date(purchase.expira_em);
+                const agora = new Date();
+
+                if (expiraEm <= agora) {
+                    return {
+                        text: 'TÍTULOS EXPIRADOS',
+                        className: 'status-expirado'
+                    };
+                }
+            }
+
+            // Pendente válido
+            return {
+                text: 'PAGAMENTO PENDENTE',
+                className: 'status-pendente'
+            };
+        }
+
+        // Fallback
+        return {
+            text: purchase.status_pagamento?.toUpperCase() || 'PROCESSANDO',
+            className: 'status-default'
+        };
     };
 
     return (
@@ -195,7 +243,7 @@ const MyTicketsPage: React.FC = () => {
                                 <div
                                     key={purchase.id}
                                     className="purchase-card"
-                                    onClick={() => handlePurchaseClick(purchase.campaignId)}
+                                    onClick={() => handlePurchaseClick(purchase.id)}
                                 >
                                     <div className="purchase-image">
                                         <img
@@ -211,9 +259,14 @@ const MyTicketsPage: React.FC = () => {
                                         <h3 className="purchase-title">
                                             {purchase.campaign?.title || 'Campanha'}
                                         </h3>
-                                        {isCampaignExpired(purchase.campaign) && (
-                                            <span className="purchase-badge expired">Expirado</span>
-                                        )}
+                                        {(() => {
+                                            const badge = getStatusBadge(purchase);
+                                            return (
+                                                <span className={`purchase-badge ${badge.className}`}>
+                                                    {badge.text}
+                                                </span>
+                                            );
+                                        })()}
                                         <p className="purchase-quantity">
                                             Quantidade: {purchase.quantity}
                                         </p>

@@ -95,8 +95,12 @@ export interface Compra {
     quantidade_titulos: number;
     valor_total: number;
     metodo_pagamento: string;
-    status: 'pendente' | 'pago' | 'cancelado';
-    data_compra: string;
+    status: 'pendente' | 'aprovado' | 'pago' | 'cancelado';
+    criado_em: string; // Backend usa 'criado_em'
+    expira_em?: string; // Prazo de expiração (10 minutos)
+    data_pagamento?: string;
+    campanha?: Campanha; // Included in /api/meus-titulos response
+    titulos?: Titulo[]; // Included in /api/meus-titulos response
 }
 
 export interface CriarCompraData {
@@ -114,8 +118,9 @@ export interface Titulo {
     id: number;
     compra_id: number;
     campanha_id: number;
-    numero_titulo: string;
-    data_criacao: string;
+    numero: string; // Backend usa 'numero'
+    is_ganhador?: boolean;
+    data_criacao?: string;
     campanha?: Campanha;
 }
 
@@ -173,3 +178,64 @@ export interface PaginationParams {
     page?: number;
     per_page?: number;
 }
+
+// ============================================
+// TIPOS DE PAGAMENTO E CHECKOUT
+// ============================================
+
+export interface DadosPagamentoPix {
+    tipo: 'pix';
+    qr_code: string;
+    qr_code_base64: string;
+    copia_cola: string;
+    payment_id?: string;
+    expira_em: string;
+    instrucoes: string;
+}
+
+export interface CheckoutResponse {
+    mensagem: string;
+    compra_id: number;
+    status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado';
+    valor_total: number;
+    metodo_pagamento: string;
+    pagamento: DadosPagamentoPix;
+    compra: CompraDetalhada;
+}
+
+export interface CompraDetalhada extends Omit<Compra, 'titulos'> {
+    campanha?: Campanha;
+    titulos: TituloCompra[];
+}
+
+export interface TituloCompra {
+    id: number;
+    numero: string;
+    is_ganhador: boolean;
+}
+
+export interface StatusPagamento {
+    compra_id: number;
+    status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado';
+    metodo_pagamento: string;
+    valor_total: number;
+    quantidade_titulos: number;
+    data_pagamento?: string;
+    criado_em: string;
+    expira_em?: string; // Prazo de expiração para pagamento
+    campanha?: {
+        id: number;
+        titulo: string;
+        slug: string;
+        imagem_principal?: string;
+        valor_titulo: number;
+        total_titulos: number;
+    };
+}
+
+export interface CriarCheckoutData {
+    campanha_id: number;
+    quantidade_titulos: number;
+    metodo_pagamento?: 'pix';
+}
+

@@ -11,15 +11,12 @@ import {
     ChevronDown,
     Minus,
     Plus,
-    CheckCircle,
-    Award,
-    RotateCcw
+    X
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import LoginModal from '../components/LoginModal';
 import MobileMenu from '../components/MobileMenu';
-import CheckoutModal from '../components/CheckoutModal';
 import PrizeTitles from '../components/PrizeTitles';
 import { useAuthContext } from '../context/AuthContext';
 import { useAuth } from '../context/AuthContext';
@@ -27,7 +24,7 @@ import type { Campaign } from '../models/types';
 // TEMPORARILY DISABLED - Prize titles integration causing crash
 // import type { TituloPremiado } from '../types/api.types';
 import { campanhaService } from '../services/campaignService';
-// import { prizeTitlesService } from '../services/prizeTitlesService';
+import { paymentService } from '../services/paymentService';
 import { mapCampanhaToFrontend } from '../utils/mappers';
 
 import '../App.css'; // Garantir estilos globais
@@ -57,7 +54,6 @@ const CampaignDetailsPage: React.FC = () => {
     // UI States
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
-    const [checkoutOpen, setCheckoutOpen] = useState(false);
 
     // Get user from Auth Context
     const { user, authenticated } = useAuth();
@@ -68,12 +64,12 @@ const CampaignDetailsPage: React.FC = () => {
 
         const ticketPrice = campaign.price;
         return [
-            { count: 72, price: parseFloat((72 * ticketPrice).toFixed(2)) },
-            { count: 143, price: parseFloat((143 * ticketPrice).toFixed(2)) },
-            { count: 286, price: parseFloat((286 * ticketPrice).toFixed(2)) },
-            { count: 572, price: parseFloat((572 * ticketPrice).toFixed(2)) },
-            { count: 1286, price: parseFloat((1286 * ticketPrice).toFixed(2)) },
-            { count: 2715, price: parseFloat((2715 * ticketPrice).toFixed(2)) },
+            { count: 100, price: parseFloat((100 * ticketPrice).toFixed(2)) },
+            { count: 200, price: parseFloat((200 * ticketPrice).toFixed(2)) },
+            { count: 300, price: parseFloat((300 * ticketPrice).toFixed(2)) },
+            { count: 500, price: parseFloat((500 * ticketPrice).toFixed(2)) },
+            { count: 1000, price: parseFloat((1000 * ticketPrice).toFixed(2)) },
+            { count: 1500, price: parseFloat((1500 * ticketPrice).toFixed(2)) },
         ];
     };
 
@@ -150,23 +146,40 @@ const CampaignDetailsPage: React.FC = () => {
         navigate('/meus-titulos');
     };
 
-    const handleParticipateClick = () => {
+    const handleParticipateClick = async () => {
         // Check if user is authenticated
         if (!authenticated || !user) {
             setLoginModalOpen(true);
             return;
         }
-        // Open checkout modal
-        setCheckoutOpen(true);
+
+        // Check if campaign has ID
+        if (!campaign?.id) {
+            alert('Erro: ID da campanha não encontrado');
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            // Create checkout via API
+            const response = await paymentService.criarCheckout({
+                campanha_id: campaign.id,
+                quantidade_titulos: ticketQuantity,
+                metodo_pagamento: 'pix',
+            });
+
+            // Redirect to checkout page with compra_id
+            navigate(`/checkout/${response.data.compra_id}`);
+
+        } catch (error: any) {
+            console.error('Erro ao criar checkout:', error);
+            const errorMessage = error.response?.data?.erro || 'Erro ao criar checkout. Tente novamente.';
+            alert(errorMessage);
+            setLoading(false);
+        }
     };
 
-    const handleCheckoutComplete = (data: { quantity: number; totalPrice: number; bonuses: number[] }) => {
-        console.log('Checkout complete:', data);
-        // TODO: Implement purchase creation logic
-        // For now, just close the modal
-        setCheckoutOpen(false);
-        alert(`Reserva concluída! ${data.quantity} títulos por R$ ${data.totalPrice.toFixed(2).replace('.', ',')}`);
-    };
 
     // Calculate total price dynamically
     const totalPrice = campaign
@@ -174,8 +187,8 @@ const CampaignDetailsPage: React.FC = () => {
         : '0.00';
 
     // Get max tickets available (menor entre limite do sistema e disponíveis)
-    const campaignLimit = campaign?.availableTickets || campaign?.totalTickets || Infinity;
-    const maxTickets = Math.min(10000, campaignLimit);
+    // const campaignLimit = campaign?.availableTickets || campaign?.totalTickets || Infinity;
+    // const maxTickets = Math.min(10000, campaignLimit);
 
     if (loading) return <div className="loading-screen">Carregando...</div>;
     if (!campaign) return <div className="error-screen">Campanha não encontrada</div>;
@@ -211,16 +224,7 @@ const CampaignDetailsPage: React.FC = () => {
                 error={authError ?? null}
             />
 
-            {campaign && (
-                <CheckoutModal
-                    isOpen={checkoutOpen}
-                    onClose={() => setCheckoutOpen(false)}
-                    campaign={campaign}
-                    quantity={ticketQuantity}
-                    user={user}
-                    onComplete={handleCheckoutComplete}
-                />
-            )}
+            {/* CheckoutModal removed - using API checkout instead */}
 
             <main className="details-main">
                 {loading ? (
@@ -266,18 +270,15 @@ const CampaignDetailsPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Stats Bar */}
-                                <div className="stats-bar">
-                                    <div className="price-tag">
-                                        <span>Por apenas</span>
-                                        <div className="price-value">R$ {campaign.price?.toFixed(2).replace('.', ',')}</div>
+                                {/* Campaign Info Bar */}
+                                <div className="campaign-info-bar">
+                                    <div className="info-item">
+                                        <span className="info-label">Por apenas</span>
+                                        <span className="info-value-price">R$ {campaign.price?.toFixed(2).replace('.', ',')}</span>
                                     </div>
-
-                                    <button className="top-buyers-btn">
-                                        <Award size={18} />
-                                        Top Compradores Diário
-                                    </button>
                                 </div>
+
+
                             </div>
                         </div>
 
@@ -302,11 +303,43 @@ const CampaignDetailsPage: React.FC = () => {
                                         >
                                             <div className="package-popular-tag">Mais popular</div>
                                             <div className="package-count">+{pkg.count}</div>
-                                            <div className="package-price">R$ {pkg.price.toFixed(2).replace('.', ',')}</div>
                                             <div className="package-action">SELECIONAR</div>
                                         </div>
                                     ))}
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Sticky Controls Section - MOVED HERE */}
+                        <div className="container">
+                            <div className="section-box">
+                                <div className="controls-section">
+                                    <div className="quantity-control">
+                                        <button className="reset-btn" onClick={handleReset} title="Limpar quantidade"><X size={20} /></button>
+                                        <button onClick={() => handleQuantityChange(-1)}><Minus size={20} /></button>
+                                        <input type="text" value={ticketQuantity} readOnly />
+                                        <button onClick={() => handleQuantityChange(1)}><Plus size={20} /></button>
+                                    </div>
+                                    <button className="participate-btn-inline" onClick={handleParticipateClick}>
+                                        <div className="btn-content-inline">
+                                            <span className="btn-icon">→</span>
+                                            <div className="btn-text">
+                                                <span className="btn-label-inline">Participar</span>
+                                                <span className="btn-price-inline">R$ {totalPrice.replace('.', ',')}</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Description Button */}
+                        <div className="container">
+                            <div className="section-box">
+                                <button className="desc-btn">
+                                    <ChevronDown size={20} />
+                                    Descrição/Regulamento
+                                </button>
                             </div>
                         </div>
 
@@ -318,32 +351,12 @@ const CampaignDetailsPage: React.FC = () => {
                                         {progress}%
                                     </div>
                                 </div>
-                                <div className="draw-info">
-                                    <div className="draw-date">
-                                        <span>Sorteio</span>
-                                        <strong>{campaign.date || 'TBA'}</strong>
-                                    </div>
-                                    <div className="draw-price">
-                                        <span>Por apenas</span>
-                                        <div className="price-badge">R$ {campaign.price?.toFixed(2).replace('.', ',')}</div>
-                                    </div>
-                                </div>
 
                                 {progress >= 100 && (
                                     <div className="warning-box-yellow">
                                         Todos os títulos disponíveis já foram pagos ou reservados.
                                     </div>
                                 )}
-                            </div>
-                        </div>
-
-                        {/* Description Button */}
-                        <div className="container">
-                            <div className="section-box">
-                                <button className="desc-btn">
-                                    <ChevronDown size={20} />
-                                    Descrição/Regulamento
-                                </button>
                             </div>
                         </div>
 
@@ -366,56 +379,6 @@ const CampaignDetailsPage: React.FC = () => {
                     </>
                 )}
             </main>
-
-            {/* Sticky Bottom Bar */}
-            {campaign && !loading && !error && (
-                <div className="sticky-action-bar">
-                    <div className="container">
-                        {/* Quick Adjust Bar */}
-                        <div className="quick-adjust-bar">
-                            {[-100, -50, -20, -10, 10, 20, 50, 100].map((val) => (
-                                <button
-                                    key={val}
-                                    className={`adjust-chip ${val > 0 ? 'positive' : 'negative'}`}
-                                    onClick={() => handleQuantityChange(val)}
-                                >
-                                    {val > 0 ? `+${val}` : val}
-                                </button>
-                            ))}
-                            <button className="reset-quantity-btn" onClick={handleReset} title="Remover a quantidade de rifas">
-                                <RotateCcw size={16} />
-                                Limpar
-                            </button>
-                        </div>
-
-                        <div className="flex-row">
-                            <div className="quantity-control">
-                                <button onClick={() => handleQuantityChange(-1)}><Minus size={20} /></button>
-                                <input type="text" value={ticketQuantity} readOnly />
-                                <button onClick={() => handleQuantityChange(1)}><Plus size={20} /></button>
-                            </div>
-                            <button className="participate-btn" onClick={handleParticipateClick}>
-                                <div className="btn-content">
-                                    <span className="btn-label"><CheckCircle size={16} /> Quero participar</span>
-                                    <span className="btn-price">R$ {totalPrice.replace('.', ',')}</span>
-                                </div>
-                            </button>
-                        </div>
-
-                        {/* Indicador de limite */}
-                        {ticketQuantity >= maxTickets && (
-                            <div style={{
-                                textAlign: 'center',
-                                padding: '0.5rem',
-                                color: '#ef4444',
-                                fontSize: '0.85rem'
-                            }}>
-                                Limite máximo de {maxTickets.toLocaleString('pt-BR')} títulos atingido
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
 
             <br /><br /><br />
             <Footer />

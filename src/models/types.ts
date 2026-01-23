@@ -82,5 +82,7 @@ export interface Purchase {
     quantity: number;
     totalAmount: number;
     purchaseDate: string;
+    status_pagamento?: 'pendente' | 'aprovado' | 'cancelado' | 'recusado' | 'expirado';
+    expira_em?: string;
     campaign?: Campaign;
 }

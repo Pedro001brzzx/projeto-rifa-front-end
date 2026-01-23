@@ -1,0 +1,447 @@
+/**
+ * My Tickets Details Page Styles
+ * Mobile-first responsive design - Updated layout
+ */
+
+.my-tickets-details-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f5;
+}
+
+.details-main {
+    flex: 1;
+    padding: 20px 16px 40px;
+}
+
+.details-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Back Button */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 20px;
+}
+
+.back-button:hover {
+    background-color: #f9f9f9;
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+.back-button:active {
+    transform: scale(0.98);
+}
+
+/* Status Alert */
+.status-alert {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.alert-error {
+    border-left: 4px solid #ff3b30;
+}
+
+.alert-warning {
+    border-left: 4px solid #ff9500;
+}
+
+.alert-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.alert-error .alert-icon {
+    background-color: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+}
+
+.alert-warning .alert-icon {
+    background-color: rgba(255, 149, 0, 0.15);
+    color: #ff9500;
+}
+
+.alert-content strong {
+    display: block;
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.alert-content p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Campaign Section */
+.campaign-section {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.campaign-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.campaign-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    flex-shrink: 0;
+}
+
+.campaign-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.campaign-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.campaign-info h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+
+.campaign-status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.campaign-access-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.campaign-access-button:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.campaign-access-button:active {
+    transform: translateY(0);
+}
+
+/* Purchase Details Card */
+.purchase-details-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.detail-row:first-child {
+    padding-top: 0;
+}
+
+.detail-label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 13px;
+    color: #333;
+    font-weight: 600;
+    text-align: right;
+}
+
+.purchase-code {
+    font-family: 'Courier New', monospace;
+    color: #4CAF50;
+    font-size: 14px;
+}
+
+.highlight-row {
+    background-color: #f9f9f9;
+    margin: 0 -16px;
+    padding: 12px 16px !important;
+    border-radius: 8px;
+}
+
+.total-value {
+    font-size: 16px;
+    color: #4CAF50;
+}
+
+/* Status Values */
+.status-pago {
+    color: #4CAF50 !important;
+}
+
+.status-pendente {
+    color: #ff9500 !important;
+}
+
+.status-cancelado,
+.status-expirado {
+    color: #ff3b30 !important;
+}
+
+/* Tickets Grid Section */
+.tickets-grid-section {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tickets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.ticket-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ticket-number:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Loading State */
+.details-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #4CAF50;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.details-loading p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Error State */
+.details-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.error-message {
+    color: #ff3b30;
+    font-size: 14px;
+    margin: 0 0 20px 0;
+}
+
+.retry-button {
+    padding: 12px 24px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .details-container {
+        max-width: 100%;
+    }
+
+    .campaign-image {
+        width: 70px;
+        height: 70px;
+    }
+
+    .campaign-info h2 {
+        font-size: 14px;
+    }
+
+    .detail-row {
+        padding: 8px 0;
+    }
+
+    .detail-label,
+    .detail-value {
+        font-size: 12px;
+    }
+
+    .tickets-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+    }
+
+    .ticket-number {
+        padding: 14px 8px;
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 768px) {
+    .details-main {
+        padding: 40px 24px 60px;
+    }
+
+    .back-button {
+        margin-bottom: 24px;
+    }
+
+    .status-alert {
+        padding: 20px;
+    }
+
+    .campaign-section {
+        padding: 20px;
+    }
+
+    .campaign-image {
+        width: 100px;
+        height: 100px;
+    }
+
+    .campaign-info h2 {
+        font-size: 17px;
+    }
+
+    .campaign-access-button {
+        padding: 14px;
+        font-size: 15px;
+    }
+
+    .purchase-details-card,
+    .tickets-grid-section {
+        padding: 20px;
+    }
+
+    .detail-row {
+        padding: 12px 0;
+    }
+
+    .detail-label,
+    .detail-value {
+        font-size: 14px;
+    }
+
+    .tickets-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+    }
+
+    .ticket-number {
+        padding: 18px 12px;
+        font-size: 16px;
+    }
+}

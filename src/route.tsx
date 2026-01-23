@@ -15,6 +15,8 @@ import TermsPage from './pages/TermsPage';
 import ContactPage from './pages/ContactPage';
 import WinnersPage from './pages/WinnersPage';
 import MyTicketsPage from './pages/MyTicketsPage';
+import MyTicketsDetailsPage from './pages/MyTicketsDetailsPage';
+import CheckoutPage from './pages/CheckoutPage';
 import AdminPanel from './components/AdminPanel';
 
 import CampaignDetailsPage from './pages/CampaignDetailsPage';
@@ -42,6 +44,8 @@ const AppRoutes: React.FC = () => {
                 <Route path="/contato" element={<ContactPage />} />
                 <Route path="/ganhadores" element={<WinnersPage />} />
                 <Route path="/meus-titulos" element={<MyTicketsPage />} />
+                <Route path="/meus-titulos/:compraId" element={<MyTicketsDetailsPage />} />
+                <Route path="/checkout/:compraId" element={<CheckoutPage />} />
                 <Route
                     path="/admin"
                     element={

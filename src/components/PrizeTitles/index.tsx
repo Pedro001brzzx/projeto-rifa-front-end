@@ -44,7 +44,7 @@ const PrizeTitles: React.FC<PrizeTitlesProps> = ({
                     >
                         <span className="prize-number">{prize.numero_titulo}</span>
                         <span className="prize-value">
-                            R${prize.valor_premio.toFixed(2).replace('.', ',')} REAIS
+                            R${prize.valor_premio.toFixed(2).replace('.', ',')}
                         </span>
                         <span className="prize-winner">
                             {prize.status === 'ganho' && prize.ganhador_nome ? (

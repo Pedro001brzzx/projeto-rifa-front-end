@@ -13,7 +13,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1538,6 +1538,44 @@ button {
   gap: 0.5rem;
 }
 
+/* Campaign Info Bar */
+.campaign-info-bar {
+  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #e5e7eb;
+}
+
+.campaign-info-bar .info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.campaign-info-bar .info-label {
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.campaign-info-bar .info-value {
+  color: #1f2937;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.campaign-info-bar .info-value-price {
+  background-color: #1e40af;
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
 .stats-bar {
   background-color: #ffffff;
   padding: 0.5rem 0.75rem;
@@ -1599,27 +1637,36 @@ button {
 
 .packages-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
   margin-bottom: 1rem;
+  justify-items: center;
 }
 
 .package-card {
-  background-color: #1f2937;
+  background-color: #10b981;
   color: white;
-  border-radius: 10px;
-  padding: 1rem 0.5rem;
+  border-radius: 8px;
+  padding: 6px;
   text-align: center;
   cursor: pointer;
   position: relative;
   border: 2px solid transparent;
   transition: all 0.15s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 187px;
+  height: 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .package-card:hover {
+  background-color: #059669;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
 }
 
 .package-card:active {
@@ -1667,22 +1714,25 @@ button {
 }
 
 .package-count {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 800;
-  margin-top: 0.25rem;
+  margin-bottom: 0px;
+  line-height: 1.1;
 }
 
 .package-price {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   opacity: 0.9;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1px;
+  line-height: 1;
 }
 
 .package-action {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: bold;
   letter-spacing: 0.5px;
+  line-height: 1;
 }
 
 .progress-section {
@@ -1759,13 +1809,15 @@ button {
   width: 100%;
   background-color: white;
   border: 1px solid #e5e7eb;
-  padding: 0.75rem;
+  padding: 10px;
+  height: 48px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-weight: 700;
+  font-size: 1.05rem;
   color: #111827;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -1855,10 +1907,12 @@ button {
   border-radius: 8px;
   overflow: hidden;
   background-color: white;
+  height: 55px;
 }
 
 .quantity-control button {
-  padding: 0.75rem;
+  height: 100%;
+  padding: 0 1.25rem;
   background: white;
   border: none;
   cursor: pointer;
@@ -1878,14 +1932,24 @@ button {
   transform: scale(0.95);
 }
 
+.quantity-control .reset-btn {
+  color: #dc2626;
+  border-right: 1px solid #d1d5db;
+}
+
+.quantity-control .reset-btn:hover {
+  background-color: #fee2e2;
+}
+
 .quantity-control input {
-  width: 70px;
+  width: 60px;
+  height: 100%;
   text-align: center;
   border: none;
   font-weight: bold;
-  font-size: 1.125rem;
+  font-size: 1.3rem;
+  background: transparent;
   color: #111827;
-  background-color: white;
   outline: none;
   appearance: none;
   -webkit-appearance: none;
@@ -1944,6 +2008,134 @@ button {
 .btn-price {
   font-size: 1.1rem;
   font-weight: 800;
+}
+
+/* CONTROLS SECTION - INLINE VERSION */
+.controls-section {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.participate-btn-inline {
+  flex: 1;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  height: 55px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.participate-btn-inline:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.participate-btn-inline:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);
+}
+
+.btn-content-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-icon {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.btn-label-inline {
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.btn-price-inline {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+/* RESPONSIVIDADE MOBILE - CAMPAIGN DETAILS */
+@media (max-width: 480px) {
+  .packages-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+  }
+
+  .package-card {
+    height: 55px;
+    /* Reduzido de 65px */
+    padding: 4px;
+    border-radius: 6px;
+  }
+
+  .package-count {
+    font-size: 1rem;
+  }
+
+  .package-price {
+    font-size: 0.65rem;
+  }
+
+  .package-action {
+    font-size: 0.55rem;
+  }
+
+  .quantity-control {
+    height: 50px;
+    /* Reduzido de 55px */
+  }
+
+  .quantity-control button {
+    padding: 0 0.75rem;
+  }
+
+  .quantity-control input {
+    width: 45px;
+    font-size: 1.1rem;
+  }
+
+  .participate-btn-inline {
+    height: 50px;
+    /* Reduzido de 55px */
+  }
+
+  .btn-content-inline {
+    gap: 0.25rem;
+  }
+
+  .btn-icon {
+    font-size: 1.1rem;
+  }
+
+  .btn-label-inline {
+    font-size: 0.7rem;
+  }
+
+  .btn-price-inline {
+    font-size: 0.95rem;
+  }
+
+  .desc-btn {
+    height: 44px;
+    font-size: 0.9rem;
+  }
 }
 
 /* QUICK ADJUST BAR */
