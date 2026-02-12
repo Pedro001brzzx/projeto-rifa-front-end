@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Ticket, ChevronRight } from 'lucide-react';
+import PurchaseTimer from '../components/PurchaseTimer';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MobileMenu from '../components/MobileMenu';
@@ -108,10 +109,6 @@ const MyTicketsPage: React.FC = () => {
         navigate(`/meus-titulos/${purchaseId}`);
     };
 
-    const isCampaignExpired = (campaign: any): boolean => {
-        return campaign?.status === 'concluded' || campaign?.status === 'expired';
-    };
-
     const getStatusBadge = (purchase: Purchase) => {
         // 1. Aprovado
         if (purchase.status_pagamento === 'aprovado') {
@@ -124,7 +121,7 @@ const MyTicketsPage: React.FC = () => {
         // 2. Expirado (backend marcou como expirado)
         if (purchase.status_pagamento === 'expirado') {
             return {
-                text: 'TÍTULOS EXPIRADOS',
+                text: 'PAGAMENTO NÃO REALIZADO',
                 className: 'status-expirado'
             };
         }
@@ -138,15 +135,15 @@ const MyTicketsPage: React.FC = () => {
 
                 if (expiraEm <= agora) {
                     return {
-                        text: 'TÍTULOS EXPIRADOS',
+                        text: 'PAGAMENTO NÃO REALIZADO',
                         className: 'status-expirado'
                     };
                 }
             }
 
-            // Pendente válido
+            // Pendente válido - mostrar com timer
             return {
-                text: 'PAGAMENTO PENDENTE',
+                text: 'AGUARDANDO PAGAMENTO',
                 className: 'status-pendente'
             };
         }
@@ -247,8 +244,13 @@ const MyTicketsPage: React.FC = () => {
                                 >
                                     <div className="purchase-image">
                                         <img
-                                            src={purchase.campaign?.image || '/placeholder.jpg'}
+                                            src={(purchase.campaign?.image && purchase.campaign.image.trim() !== '')
+                                                ? purchase.campaign.image
+                                                : '/placeholder.jpg'}
                                             alt={purchase.campaign?.title || 'Campanha'}
+                                            onError={(e) => {
+                                                e.currentTarget.src = '/placeholder.jpg';
+                                            }}
                                         />
                                     </div>
 
@@ -267,6 +269,16 @@ const MyTicketsPage: React.FC = () => {
                                                 </span>
                                             );
                                         })()}
+
+                                        {/* TIMER DE EXPIRAÇÃO */}
+                                        {purchase.status_pagamento === 'pendente' && purchase.expira_em && (
+                                            <div className="purchase-timer-container">
+                                                <PurchaseTimer
+                                                    expira_em={purchase.expira_em}
+                                                    compact
+                                                />
+                                            </div>
+                                        )}
                                         <p className="purchase-quantity">
                                             Quantidade: {purchase.quantity}
                                         </p>
@@ -274,6 +286,19 @@ const MyTicketsPage: React.FC = () => {
                                             Total: {formatCurrency(purchase.totalAmount)}
                                         </p>
                                     </div>
+
+                                    {/* BOTÃO FINALIZAR PAGAMENTO */}
+                                    {purchase.status_pagamento === 'pendente' && purchase.expira_em && (
+                                        <button
+                                            className="btn-finalizar-pagamento"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/checkout/${purchase.id}`);
+                                            }}
+                                        >
+                                            💳 Finalizar Pagamento
+                                        </button>
+                                    )}
 
                                     <div className="purchase-arrow">
                                         <ChevronRight size={20} />

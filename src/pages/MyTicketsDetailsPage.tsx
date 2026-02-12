@@ -10,6 +10,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MobileMenu from '../components/MobileMenu';
 import LoginModal from '../components/LoginModal';
+import PurchaseTimer from '../components/PurchaseTimer';
 import { useAuthContext } from '../context/AuthContext';
 import { compraService } from '../services/purchaseService';
 import type { Compra, Titulo, Campanha } from '../types/api.types';
@@ -206,6 +207,19 @@ const MyTicketsDetailsPage: React.FC = () => {
                                                 ? 'Seu pagamento foi expirado. Os títulos foram liberados.'
                                                 : 'Aguardando confirmação do pagamento.'}
                                         </p>
+
+                                        {/* TIMER DE EXPIRAÇÃO para compras pendentes */}
+                                        {purchaseDetails.status_pagamento === 'pendente' && purchaseDetails.expira_em && (
+                                            <div className="alert-timer">
+                                                <PurchaseTimer
+                                                    expira_em={purchaseDetails.expira_em}
+                                                    onExpired={() => {
+                                                        // Recarregar página quando expirar
+                                                        window.location.reload();
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -241,7 +255,7 @@ const MyTicketsDetailsPage: React.FC = () => {
                                 <div className="detail-row">
                                     <span className="detail-label">Detalhes da sua compra:</span>
                                     <span className="detail-value purchase-code">
-                                        {String(purchaseDetails.id).padStart(7, '0')}
+                                        {purchaseDetails.id}
                                     </span>
                                 </div>
 
@@ -295,16 +309,25 @@ const MyTicketsDetailsPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Tickets Grid */}
-                            {purchaseDetails.titulos && purchaseDetails.titulos.length > 0 && (
-                                <div className="tickets-grid-section">
-                                    <div className="tickets-grid">
-                                        {purchaseDetails.titulos.map((titulo) => (
-                                            <div key={titulo.id} className="ticket-number">
-                                                {titulo.numero}
-                                            </div>
-                                        ))}
+                            {/* Tickets Grid - APENAS para compras aprovadas */}
+                            {purchaseDetails.status_pagamento === 'aprovado' ? (
+                                purchaseDetails.titulos && purchaseDetails.titulos.length > 0 && (
+                                    <div className="tickets-grid-section">
+                                        <div className="tickets-grid">
+                                            {purchaseDetails.titulos.map((titulo) => (
+                                                <div key={titulo.id} className="ticket-number">
+                                                    {titulo.numero}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
+                                )
+                            ) : (
+                                <div className="tickets-pending-notice">
+                                    <span className="notice-icon">ℹ️</span>
+                                    <p>
+                                        Os títulos serão disponibilizados quando o pagamento for identificado
+                                    </p>
                                 </div>
                             )}
                         </>

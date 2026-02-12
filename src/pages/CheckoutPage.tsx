@@ -22,12 +22,13 @@ const CheckoutPage: React.FC = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState<StatusPagamento | null>(null);
-    // const [qrCodeImage, setQrCodeImage] = useState<string>('');
+    const [qrCodeImage, setQrCodeImage] = useState<string>('');
     const [pixCode, setPixCode] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [expired, setExpired] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [isFetching, setIsFetching] = useState(false); // Flag para prevenir múltiplas req
 
     const {
         user,
@@ -52,26 +53,47 @@ const CheckoutPage: React.FC = () => {
             return;
         }
 
-        loadPaymentStatus();
+        loadPaymentStatus(false); // Initial load (show loading)
 
-        // Monitorar status a cada 5 segundos
-        const interval = setInterval(loadPaymentStatus, 5000);
+        // OTIMIZADO: Reduzido de 5s para 10s para evitar piscar
+        // Monitorar status a cada 10 segundos (ao invés de 5)
+        const interval = setInterval(() => loadPaymentStatus(true), 10000); // 10s (silent)
 
         return () => clearInterval(interval);
     }, [user, compraId, navigate]);
 
-    const loadPaymentStatus = async () => {
+    // Use useCallback to ensure the function reference is stable if we wanted to add it to dependencies,
+    // but here we primarily want to detach the loading state logic from the polling.
+    const loadPaymentStatus = async (silent = false) => {
         if (!compraId) return;
 
+        // OTIMIZAÇÃO: Prevenir múltiplas requisições simultâneas
+        if (isFetching) {
+            return;
+        }
+
         try {
-            setIsLoading(true);
+            setIsFetching(true);
+
+            // Apenas mostrar loading se não for silencioso (polling)
+            if (!silent) {
+                setIsLoading(true);
+            }
+
             const response = await paymentService.consultarPagamento(parseInt(compraId));
             setPaymentStatus(response.data);
 
-            // DEBUG: Verificar dados recebidos
-            console.log('📊 Payment Status:', response.data);
-            console.log('⏱️ Expira Em:', response.data.expira_em);
-            console.log('✅ Has Expira Em?', !!response.data.expira_em);
+            // DEBUG: Verificar dados recebidos (remover logs excessivos)
+            if (response.data.status_pagamento !== 'pendente') {
+                console.log('📊 Status alterado:', response.data.status_pagamento);
+            }
+
+            // REGRA 0: Se status é 'expirado', mostrar tela de expiração imediatamente
+            if (response.data.status_pagamento === 'expirado') {
+                console.log('⏱️ Compra já expirada! Mostrando tela de expiração...');
+                setExpired(true);
+                return;
+            }
 
             // REGRA 1: Se aprovado, redirecionar para MyTickets
             if (response.data.status_pagamento === 'aprovado') {
@@ -81,6 +103,7 @@ const CheckoutPage: React.FC = () => {
                 }, 2000);
                 return;
             }
+
 
             // REGRA 2: Se compra pendente tem mais de 2 minutos, redirecionar para MyTickets
             // (usuário voltou a URL antiga, deve acompanhar pelo painel)
@@ -94,20 +117,30 @@ const CheckoutPage: React.FC = () => {
                     navigate('/meus-titulos');
                     return;
                 }
-
-                console.log(`🆕 Compra recente (${idadeEmMinutos.toFixed(1)} min). Mostrando checkout normal.`);
             }
 
-            // TODO: Buscar QR Code e PIX code do backend
-            // Por enquanto, usando mock
-            // setQrCodeImage('/placeholder-qr.png');
-            setPixCode('00020126580014br.gov.bcb.pix0136...');
+            // Dados reais do backend
+            if (response.data.pagamento) {
+                setPixCode(response.data.pagamento.copia_cola);
+                if (response.data.pagamento.qr_code_base64) {
+                    setQrCodeImage(response.data.pagamento.qr_code_base64);
+                }
+            } else if (import.meta.env.DEV) {
+                // Fallback apenas em dev se não vier nada
+                setPixCode('00020126580014br.gov.bcb.pix0136...');
+            }
 
         } catch (err) {
             console.error('Erro ao carregar status do pagamento:', err);
-            setError('Não foi possível carregar os dados do pagamento');
+            // Don't show error on polling to avoid UI flicker
+            if (!silent) {
+                setError('Não foi possível carregar os dados do pagamento');
+            }
         } finally {
-            setIsLoading(false);
+            if (!silent) {
+                setIsLoading(false);
+            }
+            setIsFetching(false);
         }
     };
 
@@ -215,7 +248,6 @@ const CheckoutPage: React.FC = () => {
                             {(() => {
                                 // Se tem expira_em, usar diretamente
                                 if (paymentStatus?.expira_em) {
-                                    console.log('✅ Usando expira_em da API:', paymentStatus.expira_em);
                                     return (
                                         <CheckoutTimer
                                             expiresAt={paymentStatus.expira_em}
@@ -233,26 +265,29 @@ const CheckoutPage: React.FC = () => {
 
                                     // IMPORTANTE: Se já expirou (criada há mais de 10 min), não renderizar timer
                                     if (expiraEm <= agora) {
-                                        console.log('❌ Compra antiga já expirou! Expirando imediatamente.');
-                                        // Expirar após próximo render para evitar loop
+                                        console.log('❌ Compra antiga já expirou (fallback)!');
                                         setTimeout(() => handleExpired(), 100);
                                         return null;
                                     }
 
-                                    const expiraEmISO = expiraEm.toISOString();
-                                    console.log('⚠️ Compra antiga válida! Expira em:', expiraEmISO);
-
                                     return (
                                         <CheckoutTimer
-                                            expiresAt={expiraEmISO}
+                                            expiresAt={expiraEm.toISOString()}
                                             onExpired={handleExpired}
                                         />
                                     );
                                 }
-
-                                console.log('❌ Não foi possível renderizar timer');
                                 return null;
                             })()}
+
+                            {/* AVISO SOBRE TEMPO LIMITE */}
+                            <div className="checkout-warning">
+                                <span className="warning-icon">⚠️</span>
+                                <p>
+                                    Este pagamento só pode ser realizado dentro do tempo. Após este período,
+                                    caso o pagamento não seja confirmado, os títulos voltam a ficar disponíveis.
+                                </p>
+                            </div>
 
                             <div className="payment-instructions">
                                 <div className="instruction-step">
@@ -295,9 +330,16 @@ const CheckoutPage: React.FC = () => {
                                     <p>Selecione a opção PIX cópia e cola, cole a chave copiada e confirme o pagamento.</p>
                                 </div>
 
-                                <button className="qr-code-toggle" onClick={() => { }}>
-                                    Mostrar QR Code
-                                </button>
+                                {qrCodeImage && (
+                                    <div className="qr-code-display" style={{ marginTop: '20px', textAlign: 'center' }}>
+                                        <p style={{ marginBottom: '10px', fontWeight: 'bold' }}>Ou escaneie o QR Code:</p>
+                                        <img
+                                            src={qrCodeImage.startsWith('data:') ? qrCodeImage : `data:image/png;base64,${qrCodeImage}`}
+                                            alt="QR Code PIX"
+                                            style={{ maxWidth: '200px', border: '1px solid #ddd', borderRadius: '8px' }}
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div className="payment-warning">

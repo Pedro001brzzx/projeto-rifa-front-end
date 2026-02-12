@@ -335,6 +335,31 @@
     font-size: 14px;
 }
 
+/* Checkout Warning (tempo limite) */
+.checkout-warning {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 24px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.checkout-warning .warning-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.checkout-warning p {
+    color: #856404;
+    margin: 0;
+    line-height: 1.6;
+    font-size: 14px;
+    font-weight: 500;
+}
+
 /* Campaign Info */
 .campaign-info {
     background: white;

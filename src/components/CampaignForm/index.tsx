@@ -19,11 +19,14 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
     const [titulo, setTitulo] = useState(campaign?.title || '');
     const [slug, setSlug] = useState('');
     const [descricao, setDescricao] = useState(campaign?.subtitle || '');
+    const [imagemPrincipal, setImagemPrincipal] = useState('');
     const [codigo, setCodigo] = useState(campaign?.code || '');
-    const [tipo, setTipo] = useState('');
+    const [tipo, setTipo] = useState<'regular' | 'especial'>('regular');
     const [premio, setPremio] = useState('');
     const [valorTitulo, setValorTitulo] = useState('');
     const [totalTitulos, setTotalTitulos] = useState('');
+    const [minQuantidade, setMinQuantidade] = useState('1');
+    const [maxQuantidade, setMaxQuantidade] = useState('');
     const [dataSorteio, setDataSorteio] = useState(campaign?.date || '');
     const [regulamento, setRegulamento] = useState('');
     const [status, setStatus] = useState<'active' | 'concluded'>(campaign?.status || 'active');
@@ -72,16 +75,20 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
         try {
             setIsUploading(true);
 
-            const campaignData: Omit<Campaign, 'id'> = {
+            const campaignData: any = {
                 title: titulo,
-                subtitle: descricao,
-                image: '', // Image URL will come from backend
+                description: descricao,
+                image: imagemPrincipal || '',
                 status,
                 code: codigo || undefined,
+                type: tipo,
+                prize: premio || titulo,
                 date: dataSorteio || undefined,
                 price: parseFloat(valorTitulo) || 0,
                 totalTickets: parseInt(totalTitulos) || 0,
-                soldTickets: 0,
+                minQuantity: parseInt(minQuantidade) || 1,
+                maxQuantity: maxQuantidade ? parseInt(maxQuantidade) : undefined,
+                regulations: regulamento || '',
             };
 
             onSubmit(campaignData);
@@ -143,7 +150,18 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
                             {errors.descricao && <span className="error-message">{errors.descricao}</span>}
                         </div>
 
-                        {/* Imagem será gerenciada pelo backend */}
+                        {/* Imagem Principal (URL) */}
+                        <div className="form-group form-group-full">
+                            <label className="form-label">URL da Imagem</label>
+                            <input
+                                type="url"
+                                value={imagemPrincipal}
+                                onChange={(e) => setImagemPrincipal(e.target.value)}
+                                className="form-input"
+                                placeholder="https://exemplo.com/imagem.jpg"
+                            />
+                            <small className="form-hint">Cole o link direto da imagem (ex: Unsplash, Imgur)</small>
+                        </div>
 
                         {/* Código */}
                         <div className="form-group">
@@ -153,20 +171,21 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
                                 value={codigo}
                                 onChange={(e) => setCodigo(e.target.value)}
                                 className="form-input"
-                                placeholder="Código da campanha"
+                                placeholder="Ex: RIFA001"
                             />
                         </div>
 
                         {/* Tipo */}
                         <div className="form-group">
                             <label className="form-label">Tipo</label>
-                            <input
-                                type="text"
+                            <select
                                 value={tipo}
-                                onChange={(e) => setTipo(e.target.value)}
+                                onChange={(e) => setTipo(e.target.value as 'regular' | 'especial')}
                                 className="form-input"
-                                placeholder="Tipo de campanha"
-                            />
+                            >
+                                <option value="regular">Regular</option>
+                                <option value="especial">Especial</option>
+                            </select>
                         </div>
 
                         {/* Prêmio */}
@@ -206,6 +225,34 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
                                 placeholder="100000"
                             />
                             {errors.totalTitulos && <span className="error-message">{errors.totalTitulos}</span>}
+                        </div>
+
+                        {/* Quantidade Mínima por Compra */}
+                        <div className="form-group">
+                            <label className="form-label">Quantidade Mínima *</label>
+                            <input
+                                type="number"
+                                min="1"
+                                value={minQuantidade}
+                                onChange={(e) => setMinQuantidade(e.target.value)}
+                                className="form-input"
+                                placeholder="1"
+                            />
+                            <small className="form-hint">Mínimo de títulos por compra</small>
+                        </div>
+
+                        {/* Quantidade Máxima por Compra */}
+                        <div className="form-group">
+                            <label className="form-label">Quantidade Máxima</label>
+                            <input
+                                type="number"
+                                min="1"
+                                value={maxQuantidade}
+                                onChange={(e) => setMaxQuantidade(e.target.value)}
+                                className="form-input"
+                                placeholder="Sem limite"
+                            />
+                            <small className="form-hint">Máximo de títulos por compra (vazio = sem limite)</small>
                         </div>
 
                         {/* Data do Sorteio */}

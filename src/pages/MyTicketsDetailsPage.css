@@ -102,6 +102,12 @@
     color: #666;
 }
 
+.alert-timer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* Campaign Section */
 .campaign-section {
     background: white;
@@ -283,6 +289,31 @@
 .ticket-number:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Tickets Pending Notice */
+.tickets-pending-notice {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.tickets-pending-notice .notice-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.tickets-pending-notice p {
+    color: #1565c0;
+    margin: 0;
+    line-height: 1.6;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 /* Loading State */

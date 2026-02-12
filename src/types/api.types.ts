@@ -95,7 +95,7 @@ export interface Compra {
     quantidade_titulos: number;
     valor_total: number;
     metodo_pagamento: string;
-    status: 'pendente' | 'aprovado' | 'pago' | 'cancelado';
+    status: 'pendente' | 'aprovado' | 'pago' | 'cancelado' | 'expirado';
     criado_em: string; // Backend usa 'criado_em'
     expira_em?: string; // Prazo de expiração (10 minutos)
     data_pagamento?: string;
@@ -196,7 +196,7 @@ export interface DadosPagamentoPix {
 export interface CheckoutResponse {
     mensagem: string;
     compra_id: number;
-    status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado';
+    status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado' | 'expirado';
     valor_total: number;
     metodo_pagamento: string;
     pagamento: DadosPagamentoPix;
@@ -216,7 +216,7 @@ export interface TituloCompra {
 
 export interface StatusPagamento {
     compra_id: number;
-    status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado';
+    status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado' | 'expirado';
     metodo_pagamento: string;
     valor_total: number;
     quantidade_titulos: number;
@@ -231,6 +231,7 @@ export interface StatusPagamento {
         valor_titulo: number;
         total_titulos: number;
     };
+    pagamento?: DadosPagamentoPix;
 }
 
 export interface CriarCheckoutData {

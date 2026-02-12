@@ -40,22 +40,21 @@ const AdminPanel: React.FC = () => {
 
     const handleCreateCampaign = async (data: any) => {
         try {
-            // Need to map frontend data back to backend format or assume service handles it if types match
-            // Typically we map back here. For now let's pass data and assume backend handles it or update later.
-            // Actually, let's look at what CampaignForm returns. 
-            // Assuming it returns object compatible with API for now or we map it.
-
-            // Map frontend keys to backend keys
+            // Map frontend data to backend API format
             const apiData = {
                 titulo: data.title,
-                slug: data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
                 descricao: data.description,
                 imagem_principal: data.image || '',
+                codigo: data.code || '',
+                tipo: data.type || 'regular',
+                premio: data.prize || data.title,
                 valor_titulo: data.price,
                 total_titulos: data.totalTickets,
-                data_sorteio: data.date,
-                premio: data.prize || data.title,
-                tipo: data.type || 'regular'
+                min_quantidade_compra: data.minQuantity || 1,
+                max_quantidade_compra: data.maxQuantity || null,
+                data_sorteio: data.date || null,
+                regulamento: data.regulations || '',
+                status: data.status === 'active' ? 'ativo' : 'concluido'
             };
 
             const response = await campanhaService.criar(apiData as any);
@@ -73,14 +72,18 @@ const AdminPanel: React.FC = () => {
         try {
             const apiData = {
                 titulo: data.title,
-                slug: data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
                 descricao: data.description,
                 imagem_principal: data.image,
+                codigo: data.code,
+                tipo: data.type,
+                premio: data.prize,
                 valor_titulo: data.price,
                 total_titulos: data.totalTickets,
-                data_sorteio: data.date,
-                premio: data.prize,
-                tipo: data.type
+                min_quantidade_compra: data.minQuantity,
+                max_quantidade_compra: data.maxQuantity,
+                data_sorteio: data.date || null,
+                regulamento: data.regulations,
+                status: data.status === 'active' ? 'ativo' : 'concluido'
             };
 
             const response = await campanhaService.atualizar(id, apiData as any);
