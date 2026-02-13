@@ -65,81 +65,56 @@ const CheckoutPage: React.FC = () => {
     // Use useCallback to ensure the function reference is stable if we wanted to add it to dependencies,
     // but here we primarily want to detach the loading state logic from the polling.
     const loadPaymentStatus = async (silent = false) => {
-        if (!compraId) return;
-
-        // OTIMIZAÇÃO: Prevenir múltiplas requisições simultâneas
-        if (isFetching) {
-            return;
-        }
+        if (!compraId || isFetching) return;
 
         try {
             setIsFetching(true);
+            if (!silent) setIsLoading(true);
 
-            // Apenas mostrar loading se não for silencioso (polling)
-            if (!silent) {
-                setIsLoading(true);
-            }
-
+            console.log(`🔄 [POLLING] Consultando status da compra #${compraId}...`);
             const response = await paymentService.consultarPagamento(parseInt(compraId));
-            setPaymentStatus(response.data);
+            const data = response.data;
 
-            // DEBUG: Verificar dados recebidos (remover logs excessivos)
-            if (response.data.status_pagamento !== 'pendente') {
-                console.log('📊 Status alterado:', response.data.status_pagamento);
+            setPaymentStatus(data);
+
+            // 1. Extração Ultra-Resiliente do PIX (Back & Front em sintonia)
+            if (data.pagamento) {
+                const pag = data.pagamento;
+
+                // Prioridade para as chaves novas, fallback para as legadas
+                const pixCopiaCola = pag.pix_code || pag.copia_cola;
+                const qrCodeBase64 = pag.qr_code_base64 || pag.qr_code;
+
+                if (pixCopiaCola) {
+                    setPixCode(pixCopiaCola);
+                }
+
+                if (qrCodeBase64) {
+                    setQrCodeImage(qrCodeBase64);
+                    // Log silencioso no console para debug
+                    if (!silent) console.log('🖼️ QR Code persistido no estado.');
+                }
+            } else if (import.meta.env.DEV && !pixCode) {
+                setPixCode('00020126580014br.gov.bcb.pix0136...');
             }
 
-            // REGRA 0: Se status é 'expirado', mostrar tela de expiração imediatamente
-            if (response.data.status_pagamento === 'expirado') {
-                console.log('⏱️ Compra já expirada! Mostrando tela de expiração...');
+            // 2. Lógica de Status
+            if (data.status_pagamento === 'expirado') {
                 setExpired(true);
                 return;
             }
 
-            // REGRA 1: Se aprovado, redirecionar para MyTickets
-            if (response.data.status_pagamento === 'aprovado') {
-                console.log('✅ Pagamento aprovado! Redirecionando para MyTickets em 2s...');
-                setTimeout(() => {
-                    navigate('/meus-titulos');
-                }, 2000);
+            if (data.status_pagamento === 'aprovado') {
+                console.log('✅ Pagamento detectado!');
+                setTimeout(() => navigate('/meus-titulos'), 2000);
                 return;
             }
 
-
-            // REGRA 2: Se compra pendente tem mais de 2 minutos, redirecionar para MyTickets
-            // (usuário voltou a URL antiga, deve acompanhar pelo painel)
-            if (response.data.status_pagamento === 'pendente' && response.data.criado_em) {
-                const criadoEm = new Date(response.data.criado_em);
-                const agora = new Date();
-                const idadeEmMinutos = (agora.getTime() - criadoEm.getTime()) / (1000 * 60);
-
-                if (idadeEmMinutos > 2) {
-                    console.log(`⏰ Compra pendente com ${idadeEmMinutos.toFixed(1)} minutos. Redirecionando para MyTickets...`);
-                    navigate('/meus-titulos');
-                    return;
-                }
-            }
-
-            // Dados reais do backend
-            if (response.data.pagamento) {
-                setPixCode(response.data.pagamento.copia_cola);
-                if (response.data.pagamento.qr_code_base64) {
-                    setQrCodeImage(response.data.pagamento.qr_code_base64);
-                }
-            } else if (import.meta.env.DEV) {
-                // Fallback apenas em dev se não vier nada
-                setPixCode('00020126580014br.gov.bcb.pix0136...');
-            }
-
         } catch (err) {
-            console.error('Erro ao carregar status do pagamento:', err);
-            // Don't show error on polling to avoid UI flicker
-            if (!silent) {
-                setError('Não foi possível carregar os dados do pagamento');
-            }
+            console.error('❌ Erro no polling de pagamento:', err);
+            if (!silent) setError('Não foi possível carregar os dados do pagamento');
         } finally {
-            if (!silent) {
-                setIsLoading(false);
-            }
+            if (!silent) setIsLoading(false);
             setIsFetching(false);
         }
     };

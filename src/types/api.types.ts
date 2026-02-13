@@ -187,6 +187,7 @@ export interface DadosPagamentoPix {
     tipo: 'pix';
     qr_code: string;
     qr_code_base64: string;
+    pix_code?: string; // Resiliência: usado no backend
     copia_cola: string;
     payment_id?: string;
     expira_em: string;

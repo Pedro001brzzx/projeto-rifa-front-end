@@ -85,4 +85,9 @@ export interface Purchase {
     status_pagamento?: 'pendente' | 'aprovado' | 'cancelado' | 'recusado' | 'expirado';
     expira_em?: string;
     campaign?: Campaign;
+    titulos?: {
+        id: number;
+        numero: string;
+        is_ganhador?: boolean;
+    }[];
 }

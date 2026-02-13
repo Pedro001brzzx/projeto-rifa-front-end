@@ -227,18 +227,18 @@ const MyTicketsDetailsPage: React.FC = () => {
                             {/* Campaign Section */}
                             {purchaseDetails.campanha && (
                                 <div className="campaign-section">
-                                    <div className="campaign-header">
-                                        <div className="campaign-image">
-                                            <img
-                                                src={purchaseDetails.campanha.imagem_principal}
-                                                alt={purchaseDetails.campanha.titulo}
-                                            />
-                                        </div>
-                                        <div className="campaign-info">
+                                    <div className="campaign-header-stacked">
+                                        <div className="campaign-info-header">
                                             <h2>{purchaseDetails.campanha.titulo}</h2>
                                             <span className="campaign-status-badge">
                                                 {purchaseDetails.campanha.status === 'ativo' ? 'Campanha ativa' : 'Campanha encerrada'}
                                             </span>
+                                        </div>
+                                        <div className="campaign-image-full">
+                                            <img
+                                                src={purchaseDetails.campanha.imagem_principal}
+                                                alt={purchaseDetails.campanha.titulo}
+                                            />
                                         </div>
                                     </div>
                                     <button

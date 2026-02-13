@@ -29,7 +29,7 @@ export const compraService = {
     meusTitulos: async (params: PaginationParams = {}): Promise<AxiosResponse<MeusTitulosResponse>> => {
         const defaultParams: PaginationParams = {
             page: 1,
-            per_page: 20,
+            per_page: 100, // Aumentado para evitar sumiço de compras antigas
             ...params,
         };
         return await api.get<MeusTitulosResponse>('/api/meus-titulos', { params: defaultParams });

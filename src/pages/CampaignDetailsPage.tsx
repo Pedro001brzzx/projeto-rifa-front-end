@@ -174,8 +174,19 @@ const CampaignDetailsPage: React.FC = () => {
 
         } catch (error: any) {
             console.error('Erro ao criar checkout:', error);
-            const errorMessage = error.response?.data?.erro || 'Erro ao criar checkout. Tente novamente.';
+
+            // Tratamento de erro profissional (Fintech Standard)
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.erro || 'Erro ao processar pedido. Tente novamente.';
+
+            if (errorData?.categoria === 'perfil_incompleto') {
+                alert(errorMessage);
+                navigate('/perfil');
+                return;
+            }
+
             alert(errorMessage);
+        } finally {
             setLoading(false);
         }
     };

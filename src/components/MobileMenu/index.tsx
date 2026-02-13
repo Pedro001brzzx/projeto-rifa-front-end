@@ -57,6 +57,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
         onCloseMenu();
     };
 
+    const handleProfileClick = () => {
+        navigate('/perfil');
+        onCloseMenu();
+    };
+
     const handleLogoutClick = async () => {
         await handleLogout();
         onCloseMenu();
@@ -83,10 +88,17 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
                         <CreditCard size={20} />
                         <span>Meus títulos</span>
                     </button>
-                    <button className="mobile-nav-item mobile-nav-item-highlight" onClick={handleRegisterClick}>
-                        <UserPlus size={20} />
-                        <span>Cadastro</span>
-                    </button>
+                    {user ? (
+                        <button className="mobile-nav-item mobile-nav-item-highlight" onClick={handleProfileClick}>
+                            <CreditCard size={20} />
+                            <span>Meu Perfil</span>
+                        </button>
+                    ) : (
+                        <button className="mobile-nav-item mobile-nav-item-highlight" onClick={handleRegisterClick}>
+                            <UserPlus size={20} />
+                            <span>Cadastro</span>
+                        </button>
+                    )}
                     <button className="mobile-nav-item" onClick={handleWinnersClick}>
                         <Trophy size={20} />
                         <span>Ganhadores</span>

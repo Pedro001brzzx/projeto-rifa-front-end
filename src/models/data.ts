@@ -11,17 +11,20 @@ export const campaigns: Campaign[] = [
         title: "EDIÇÃO 132 - KIT MUDANÇA DE VIDA - 3 GANHADORES",
         subtitle: "1º GM CRUZE LT 2022 + R$400.000,00 // 2º GM CRUZE LT 2022 + R$200.000,00 // 3º HONDA CB1000R 2012 + R$200.000,00",
         image: "https://s3.incrivelsorteios.com/redimensiona?key=600x600/20251217_6942e0d73bf2a.jpeg",
-        status: "active"
+        status: "active",
+        price: 0.99,
+        totalTickets: 1000000,
+        soldTickets: 500000
     },
     {
         id: 2,
         title: "EDIÇÃO 135 - HONDA/ CB300F TWISTER 2026",
         subtitle: "HONDA/ CB300F TWISTER 2026",
-        badge: "EDIÇÃO SELECT: APENAS 10 MIL PARTICIPANTES",
-        code: "GIROS_LTP10M/135",
-        date: "17/12",
         image: "https://s3.incrivelsorteios.com/redimensiona?key=600x600/20251217_6943170d88ec8.jpeg",
-        status: "active"
+        status: "active",
+        price: 0.49,
+        totalTickets: 1000000,
+        soldTickets: 250000
     },
     {
         id: 3,
@@ -29,16 +32,21 @@ export const campaigns: Campaign[] = [
         subtitle: "HILUX SRV + COROLLA GLI + 300 MIL NA CONTA",
         date: "18/12",
         image: "https://s3.incrivelsorteios.com/redimensiona?key=600x600/20251216_6941909e6e0b4.jpeg",
-        status: "concluded"
+        status: "concluded",
+        price: 1.99,
+        totalTickets: 500000,
+        soldTickets: 500000
     },
     {
         id: 4,
         title: "EDIÇÃO 130 - VW/POLO TRACK 2026",
         subtitle: "VW/POLO TRACK 2026",
-        code: "GIROS_LTP10M/130",
         date: "17/12",
         image: "https://s3.incrivelsorteios.com/redimensiona?key=600x600/20251216_6941b3602a1d3.jpeg",
-        status: "concluded"
+        status: "concluded",
+        price: 0.15,
+        totalTickets: 10000000,
+        soldTickets: 10000000
     },
     {
         id: 5,
@@ -46,16 +54,21 @@ export const campaigns: Campaign[] = [
         subtitle: "R$100.000,00",
         date: "18/12",
         image: "https://s3.incrivelsorteios.com/redimensiona?key=600x600/20251217_6942d8ad1dbf6.jpeg",
-        status: "concluded"
+        status: "concluded",
+        price: 0.50,
+        totalTickets: 200000,
+        soldTickets: 200000
     },
     {
         id: 6,
         title: "EDIÇÃO 134 - HONDA/ CG TITAN 2026",
         subtitle: "HONDA/ CG TITAN 2026",
-        code: "GIROS_LTP10M/134",
         date: "17/12",
         image: "https://s3.incrivelsorteios.com/redimensiona?key=600x600/20251217_6943162f8a9ca.jpeg",
-        status: "concluded"
+        status: "concluded",
+        price: 0.25,
+        totalTickets: 400000,
+        soldTickets: 400000
     }
 ];
 

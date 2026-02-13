@@ -20,6 +20,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import AdminPanel from './components/AdminPanel';
 
 import CampaignDetailsPage from './pages/CampaignDetailsPage';
+import ProfilePage from './pages/ProfilePage';
 
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -46,6 +47,7 @@ const AppRoutes: React.FC = () => {
                 <Route path="/meus-titulos" element={<MyTicketsPage />} />
                 <Route path="/meus-titulos/:compraId" element={<MyTicketsDetailsPage />} />
                 <Route path="/checkout/:compraId" element={<CheckoutPage />} />
+                <Route path="/perfil" element={<ProfilePage />} />
                 <Route
                     path="/admin"
                     element={
