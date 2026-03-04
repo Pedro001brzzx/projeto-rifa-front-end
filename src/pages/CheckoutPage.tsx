@@ -72,7 +72,7 @@ const CheckoutPage: React.FC = () => {
             if (!silent) setIsLoading(true);
 
             console.log(`🔄 [POLLING] Consultando status da compra #${compraId}...`);
-            const response = await paymentService.consultarPagamento(parseInt(compraId));
+            const response = await paymentService.consultarPagamento(compraId);
             const data = response.data;
 
             setPaymentStatus(data);
@@ -106,7 +106,7 @@ const CheckoutPage: React.FC = () => {
 
             if (data.status_pagamento === 'aprovado') {
                 console.log('✅ Pagamento detectado!');
-                setTimeout(() => navigate('/meus-titulos'), 2000);
+                setTimeout(() => navigate(`/meus-titulos/${compraId}`), 2000);
                 return;
             }
 

@@ -28,6 +28,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
                     className="campaign-image"
                 />
                 {campaign.status === 'active' && <div className="status-badge" style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 10 }}>Adquira Já!</div>}
+
+                {/* Warning Badge - Corre que está acabando */}
+                {campaign.status === 'active' && (campaign.soldPercentage || 0) > 50 && (
+                    <div className="warning-badge">
+                        Corre que está acabando!
+                    </div>
+                )}
             </div>
 
             {/* Conteúdo da Campanha */}

@@ -36,7 +36,16 @@ const CampaignCardCompact: React.FC<CampaignCardCompactProps> = ({ campaign }) =
             {/* Informações */}
             <div className="campaign-compact-info">
                 <h4 className="campaign-compact-title">{campaign.title}</h4>
-                <p className="campaign-compact-subtitle">*40.000,00 EM PRÊMIOS INSTANTÂNEOS</p>
+                {campaign.status === 'concluded' ? (
+                    <span className="campaign-compact-badge badge-concluido">Rifa Realizada</span>
+                ) : campaign.status === 'active' && (campaign.soldPercentage || 0) >= 70 ? (
+                    <span className="campaign-compact-badge badge-urgente">🔥 Últimas unidades!</span>
+                ) : (
+                    <span className="campaign-compact-badge badge-disponivel">✅ Disponível</span>
+                )}
+                {campaign.status === 'concluded' && campaign.conclusionDate && (
+                    <span className="campaign-compact-date">📅 {campaign.conclusionDate}</span>
+                )}
             </div>
 
             {/* Botão consultar */}
@@ -48,11 +57,8 @@ const CampaignCardCompact: React.FC<CampaignCardCompactProps> = ({ campaign }) =
                         handleClick();
                     }}
                 >
-                    Consultar
+                    {campaign.status === 'concluded' ? 'Ver Resultado' : 'Consultar'}
                 </button>
-                {campaign.date && (
-                    <span className="campaign-compact-date">{campaign.date}</span>
-                )}
             </div>
         </div>
     );

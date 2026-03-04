@@ -6,30 +6,35 @@
 import React from 'react';
 import WinnerCard from '../WinnerCard';
 import type { Winner } from '../../models/types';
+import './WinnersSection.css';
 
 interface WinnersSectionProps {
     winners: Winner[];
 }
 
 const WinnersSection: React.FC<WinnersSectionProps> = ({ winners }) => {
-    if (winners.length === 0) return null;
-
     return (
         <div className="winners-section" id="ganhadores">
             <div className="container">
                 <div className="winners-header">
-                    <span className="winners-icon">🎉</span>
-                    <div className="winners-title-group">
-                        <h2 className="winners-title">Ganhadores</h2>
-                        <p className="winners-subtitle">sorteados</p>
+                    <div className="winners-branding">
+                        <span className="brand-text">o presente da</span>
+                        <span className="brand-highlight">sorte</span>
+                        <span className="brand-icon">🍀</span>
                     </div>
                 </div>
 
-                <div className="winners-list">
-                    {winners.map((winner) => (
-                        <WinnerCard key={winner.id} winner={winner} />
-                    ))}
-                </div>
+                {winners.length > 0 ? (
+                    <div className="winners-list">
+                        {winners.map((winner) => (
+                            <WinnerCard key={winner.id} winner={winner} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="no-winners-home">
+                        <p>Ainda não temos ganhadores. Seja o primeiro!</p>
+                    </div>
+                )}
             </div>
         </div>
     );

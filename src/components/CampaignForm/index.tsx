@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import type { Campaign } from '../../models/types';
+import ImageUpload from '../ImageUpload';
 import './CampaignForm.css';
 
 interface CampaignFormProps {
@@ -150,17 +151,12 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign, onSubmit, onCance
                             {errors.descricao && <span className="error-message">{errors.descricao}</span>}
                         </div>
 
-                        {/* Imagem Principal (URL) */}
+                        {/* Imagem Principal (Upload) */}
                         <div className="form-group form-group-full">
-                            <label className="form-label">URL da Imagem</label>
-                            <input
-                                type="url"
+                            <ImageUpload
                                 value={imagemPrincipal}
-                                onChange={(e) => setImagemPrincipal(e.target.value)}
-                                className="form-input"
-                                placeholder="https://exemplo.com/imagem.jpg"
+                                onChange={setImagemPrincipal}
                             />
-                            <small className="form-hint">Cole o link direto da imagem (ex: Unsplash, Imgur)</small>
                         </div>
 
                         {/* Código */}

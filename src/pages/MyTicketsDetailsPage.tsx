@@ -68,7 +68,7 @@ const MyTicketsDetailsPage: React.FC = () => {
 
                 // Find the specific purchase by ID
                 const purchase = response.data.compras.find(
-                    (compra: any) => compra.id === parseInt(compraId)
+                    (compra: any) => compra.id === compraId
                 );
 
                 if (!purchase) {

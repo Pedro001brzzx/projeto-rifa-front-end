@@ -19,14 +19,14 @@ const PrizeTitles: React.FC<PrizeTitlesProps> = ({
     totalCount,
     wonCount
 }) => {
-    // If counts not provided, calculate from prizes array
-    const calculatedWonCount = wonCount ?? prizes.filter(p => p.status === 'ganho').length;
-    const calculatedTotalCount = totalCount ?? prizes.length;
-
     // Don't render if no prizes
     if (!prizes || prizes.length === 0) {
         return null;
     }
+
+    // If counts not provided, calculate from prizes array
+    const calculatedWonCount = wonCount ?? prizes.filter(p => p.status === 'ganho').length;
+    const calculatedTotalCount = totalCount ?? prizes.length;
 
     return (
         <div className="prize-titles-section">

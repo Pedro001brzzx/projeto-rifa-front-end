@@ -1,0 +1,100 @@
+.install-app-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1a8f3d;
+    /* Green similar to reference */
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: max-content;
+    max-width: 90vw;
+    animation: slideUp 0.5s ease-out;
+}
+
+.install-app-button:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    background-color: #157a32;
+}
+
+.install-app-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    /* Slightly rounded square for icon bg */
+    padding: 8px;
+}
+
+.install-app-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.install-app-title {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.install-app-subtitle {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.install-app-arrow {
+    margin-left: 8px;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .install-app-button {
+        padding: 10px 16px;
+        gap: 12px;
+        bottom: 16px;
+        width: auto;
+        left: 16px;
+        right: 16px;
+        transform: none;
+        /* Full width on mobile looks good too, or keep centered pill */
+        justify-content: space-between;
+    }
+
+    .install-app-button:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Reset for mobile specific behavior if needed, currently keeping it pill shaped but responsive */
+    .install-app-button {
+        border-radius: 12px;
+        /* Less round on mobile if full width desired, or keep 50px */
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+    }
+}

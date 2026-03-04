@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 
 interface HeaderProps {
@@ -25,11 +26,13 @@ const Header: React.FC<HeaderProps> = ({
             <div className="header-content">
                 {/* Logo */}
                 <div className="header-left">
-                    <img
-                        src={logo}
-                        alt="Gêmeos Brasil"
-                        className="logo"
-                    />
+                    <Link to="/">
+                        <img
+                            src={logo}
+                            alt="Gêmeos Brasil"
+                            className="logo"
+                        />
+                    </Link>
                 </div>
 
                 <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

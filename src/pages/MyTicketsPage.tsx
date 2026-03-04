@@ -144,7 +144,7 @@ const MyTicketsPage: React.FC = () => {
 
 
 
-    const handlePurchaseClick = (purchaseId: number) => {
+    const handlePurchaseClick = (purchaseId: string) => {
         navigate(`/meus-titulos/${purchaseId}`);
     };
 

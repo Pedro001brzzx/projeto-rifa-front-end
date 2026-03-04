@@ -18,6 +18,9 @@ import MyTicketsPage from './pages/MyTicketsPage';
 import MyTicketsDetailsPage from './pages/MyTicketsDetailsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import AdminPanel from './components/AdminPanel';
+import ComunicadosPage from './pages/ComunicadosPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
 
 import CampaignDetailsPage from './pages/CampaignDetailsPage';
 import ProfilePage from './pages/ProfilePage';
@@ -48,8 +51,11 @@ const AppRoutes: React.FC = () => {
                 <Route path="/meus-titulos/:compraId" element={<MyTicketsDetailsPage />} />
                 <Route path="/checkout/:compraId" element={<CheckoutPage />} />
                 <Route path="/perfil" element={<ProfilePage />} />
+                <Route path="/comunicados" element={<ComunicadosPage />} />
+                <Route path="/politica-de-privacidade" element={<PrivacyPolicyPage />} />
+                <Route path="/politica-de-cookies" element={<CookiePolicyPage />} />
                 <Route
-                    path="/admin"
+                    path="/painel-secreto-x9"
                     element={
                         <ProtectedRoute>
                             <AdminPanel />

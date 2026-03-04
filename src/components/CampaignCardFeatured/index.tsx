@@ -31,12 +31,35 @@ const CampaignCardFeatured: React.FC<CampaignCardFeaturedProps> = ({ campaign })
                     alt={campaign.title}
                     className="campaign-featured-image"
                 />
+
+                {/* Concluded Badge */}
+                {campaign.status === 'concluded' && (
+                    <div className="concluded-badge">
+                        Rifa Realizada
+                    </div>
+                )}
+
+                {/* Warning Badge - Últimas unidades */}
+                {campaign.status === 'active' && (campaign.soldPercentage || 0) >= 70 && (
+                    <div className="warning-badge">
+                        🔥 Últimas unidades!
+                    </div>
+                )}
             </div>
 
             {/* Conteúdo */}
             <div className="campaign-featured-content">
                 <h3 className="campaign-featured-title">{campaign.title}</h3>
-                <p className="campaign-featured-subtitle">Participe e concorra!</p>
+                {campaign.status === 'concluded' ? (
+                    <>
+                        <p className="campaign-featured-subtitle" style={{ color: '#3b82f6' }}>Rifa Realizada</p>
+                        {campaign.conclusionDate && (
+                            <p className="campaign-featured-date">📅 {campaign.conclusionDate}</p>
+                        )}
+                    </>
+                ) : (
+                    <p className="campaign-featured-subtitle">Participe e concorra!</p>
+                )}
 
                 <button
                     className="campaign-featured-btn"
@@ -45,7 +68,7 @@ const CampaignCardFeatured: React.FC<CampaignCardFeaturedProps> = ({ campaign })
                         handleClick();
                     }}
                 >
-                    Adquira Já!
+                    {campaign.status === 'concluded' ? 'Ver Resultado' : 'Adquira Já!'}
                 </button>
             </div>
         </div>

@@ -11,46 +11,18 @@ import MobileMenu from '../components/MobileMenu';
 import LoginModal from '../components/LoginModal';
 import WinnerCard from '../components/WinnerCard';
 import { useAuthContext } from '../context/AuthContext';
+import campanhaService from '../services/campaignService';
 import type { Winner } from '../models/types';
 import './WinnersPage.css';
 
-// Mock winners data
-const mockWinners: Winner[] = [
-    {
-        id: '1',
-        name: 'João Silva',
-        campaignTitle: 'iPhone 15 Pro Max',
-        prize: 'iPhone 15 Pro Max 256GB',
-        luckyNumber: '001234',
-        drawDate: '15/12/2025',
-        phone: '(11) 98765-4321',
-        avatar: ''
-    },
-    {
-        id: '2',
-        name: 'Maria Santos',
-        campaignTitle: 'Moto G84',
-        prize: 'Moto G84 128GB',
-        luckyNumber: '007890',
-        drawDate: '10/12/2025',
-        phone: '(21) 91234-5678',
-        avatar: ''
-    },
-    {
-        id: '3',
-        name: 'Pedro Oliveira',
-        campaignTitle: 'Galaxy S23',
-        prize: 'Samsung Galaxy S23 Ultra',
-        luckyNumber: '004567',
-        drawDate: '05/12/2025',
-        phone: '(31) 99876-5432',
-        avatar: ''
-    }
-];
+
 
 const WinnersPage: React.FC = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const [winners, setWinners] = useState<Winner[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const {
         cpf,
         password,
@@ -60,6 +32,21 @@ const WinnersPage: React.FC = () => {
         setPassword,
         handleLogin
     } = useAuthContext();
+
+    React.useEffect(() => {
+        const fetchWinners = async () => {
+            try {
+                const response = await campanhaService.listarGanhadores(100); // Fetch up to 100 winners
+                setWinners(response.data.ganhadores || []);
+            } catch (error) {
+                console.error('Erro ao buscar ganhadores:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchWinners();
+    }, []);
 
     return (
         <div className="winners-page">
@@ -93,22 +80,31 @@ const WinnersPage: React.FC = () => {
             <main className="winners-main">
                 <div className="container">
                     <div className="winners-header">
-                        <Trophy size={32} className="winners-icon" />
-                        <h1>Ganhadores</h1>
+                        <div className="winners-branding">
+                            <span className="brand-text">o presente da</span>
+                            <span className="brand-highlight">sorte</span>
+                            <span className="brand-icon">🍀</span>
+                        </div>
                         <p className="winners-subtitle">Confira os sortudos que já ganharam com a gente!</p>
                     </div>
 
-                    <div className="winners-grid">
-                        {mockWinners.map((winner: Winner) => (
-                            <WinnerCard key={winner.id} winner={winner} />
-                        ))}
-                    </div>
+                    {loading ? (
+                        <div className="loading-state">Carregando ganhadores...</div>
+                    ) : (
+                        <>
+                            <div className="winners-grid">
+                                {winners.map((winner: Winner) => (
+                                    <WinnerCard key={winner.id} winner={winner} />
+                                ))}
+                            </div>
 
-                    {mockWinners.length === 0 && (
-                        <div className="no-winners">
-                            <Trophy size={48} />
-                            <p>Ainda não temos ganhadores. Seja o primeiro!</p>
-                        </div>
+                            {winners.length === 0 && (
+                                <div className="no-winners">
+                                    <Trophy size={48} />
+                                    <p>Ainda não temos ganhadores. Seja o primeiro!</p>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </main>

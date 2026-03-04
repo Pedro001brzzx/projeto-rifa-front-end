@@ -17,7 +17,7 @@ class PrizeTitlesService {
      */
     async getPrizeTitles(campaignSlug: string): Promise<TitulosPremiadosResponse> {
         try {
-            const response = await api.get(`/campanhas/${campaignSlug}/titulos-premiados`);
+            const response = await api.get(`/api/campanhas/${campaignSlug}/titulos-premiados`);
             return response.data;
         } catch (error) {
             console.error('Error fetching prize titles:', error);
@@ -37,10 +37,10 @@ class PrizeTitlesService {
      * @param data - Prize title data
      */
     async addPrizeTitle(
-        campaignId: number,
+        campaignId: number | string,
         data: AdicionarTituloPremiadoData
     ): Promise<void> {
-        await api.post(`/admin/campanhas/${campaignId}/titulos-premiados`, data);
+        await api.post(`/api/campanhas/${campaignId}/titulos-premiados`, data);
     }
 
     /**
@@ -52,7 +52,7 @@ class PrizeTitlesService {
         prizeTitleId: number,
         data: MarcarGanhadorData
     ): Promise<void> {
-        await api.patch(`/admin/titulos-premiados/${prizeTitleId}/ganhador`, data);
+        await api.patch(`/api/campanhas/titulos-premiados/${prizeTitleId}/ganhador`, data);
     }
 
     /**
@@ -60,7 +60,7 @@ class PrizeTitlesService {
      * @param prizeTitleId - The prize title ID
      */
     async deletePrizeTitle(prizeTitleId: number): Promise<void> {
-        await api.delete(`/admin/titulos-premiados/${prizeTitleId}`);
+        await api.delete(`/api/campanhas/titulos-premiados/${prizeTitleId}`);
     }
 }
 

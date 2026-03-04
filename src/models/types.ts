@@ -20,7 +20,9 @@ export interface Campaign {
     type?: string;
     date?: string;
     slug?: string;
+    conclusionDate?: string;
     createdAt?: string;
+    minQuantity?: number;
 }
 
 export interface FAQ {
@@ -76,8 +78,8 @@ export interface RegisterFormData {
 }
 
 export interface Purchase {
-    id: number;
-    campaignId: number;
+    id: string;
+    campaignId: string;
     userId: number;
     quantity: number;
     totalAmount: number;

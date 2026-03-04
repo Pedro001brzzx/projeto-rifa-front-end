@@ -6,6 +6,23 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 
+## [1.3.0] - 2026-03-04
+
+### Adicionado
+- **Recuperação de Senha**: Fluxo completo de recuperação e redefinição de senha com tokens seguros e expiração.
+- **Detalhes de Ganhadores**: Nova seção na página de detalhes da campanha para exibir ganhador (nome, prêmio, número, data e telefone mascarado) para campanhas finalizadas.
+- **Políticas e Termos**: Adição de pop-ups e páginas para Termos de Uso, Política de Privacidade e Política de Cookies.
+
+### Melhorado
+- **Segurança Reforçada**: Migração de IDs internos para UUIDs públicos, mascaramento de dados sensíveis e ofuscação da rota de administração.
+- **Exibição de Campanhas**: Melhorias na ordenação, remoção de textos obsoletos e badges de "Disponível" e "Últimas unidades" dinâmicos.
+- **Detalhes do Título**: Interface refinada da página de detalhes dos títulos, com números em verde e melhor disposição de layout.
+- **Meus Títulos**: Ordenação de compras (Pendente > Aprovado > Expirado).
+- **Restrição de Compra Mínima**: Input agora assume restrições automáticas de compra mínima.
+
+### Corrigido
+- **Fluxo de Pagamento**: Correção de erros 404 (compraId nulo), suporte a UUIDs, ajuste no CORS, e refinamento da integração do Axios.
+
 ## [1.2.0] - 2026-01-23
 
 ### Adicionado

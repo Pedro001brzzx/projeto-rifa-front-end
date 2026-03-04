@@ -19,7 +19,6 @@ export const campanhaService = {
      */
     listar: async (params: CampanhaParams = {}): Promise<AxiosResponse<CampanhaListResponse>> => {
         const defaultParams: CampanhaParams = {
-            status: 'ativo',
             page: 1,
             per_page: 20,
             ...params,
@@ -51,7 +50,7 @@ export const campanhaService = {
      * @param dados - Dados para atualizar
      * @returns Promise com campanha atualizada
      */
-    atualizar: async (campanhaId: number, dados: Partial<CriarCampanhaData>): Promise<AxiosResponse<{ mensagem: string; campanha: Campanha }>> => {
+    atualizar: async (campanhaId: number | string, dados: Partial<CriarCampanhaData>): Promise<AxiosResponse<{ mensagem: string; campanha: Campanha }>> => {
         return await api.put(`/api/campanhas/${campanhaId}`, dados);
     },
 
@@ -60,7 +59,7 @@ export const campanhaService = {
      * @param campanhaId - ID da campanha
      * @returns Promise com mensagem de sucesso
      */
-    deletar: async (campanhaId: number): Promise<AxiosResponse<MessageResponse>> => {
+    deletar: async (campanhaId: number | string): Promise<AxiosResponse<MessageResponse>> => {
         return await api.delete<MessageResponse>(`/api/campanhas/${campanhaId}`);
     },
 
@@ -78,6 +77,36 @@ export const campanhaService = {
      */
     listarConcluidas: async (): Promise<AxiosResponse<CampanhaListResponse>> => {
         return await campanhaService.listar({ status: 'concluido' });
+    },
+
+    /**
+     * Busca compradores de uma campanha (admin only)
+     * @param campanhaId - ID da campanha
+     * @param termo - Termo de busca (nome, telefone, cota)
+     */
+    buscarCompradores: async (campanhaId: number | string, termo: string): Promise<AxiosResponse<any>> => {
+        return await api.get(`/api/campanhas/${campanhaId}/compradores`, {
+            params: { q: termo }
+        });
+    },
+
+    /**
+     * Define o ganhador de uma campanha (admin only)
+     * @param campanhaId - ID da campanha
+     * @param dados - Dados do ganhador
+     */
+    definirGanhador: async (campanhaId: number | string, dados: { compra_id: number; titulo_id?: number }): Promise<AxiosResponse<any>> => {
+        return await api.post(`/api/campanhas/${campanhaId}/ganhador`, dados);
+    },
+
+    /**
+     * Lista os ganhadores (public)
+     * @param limit - Limite de registros
+     */
+    listarGanhadores: async (limit: number = 10): Promise<AxiosResponse<any>> => {
+        return await api.get('/api/ganhadores', {
+            params: { limit }
+        });
     },
 };
 

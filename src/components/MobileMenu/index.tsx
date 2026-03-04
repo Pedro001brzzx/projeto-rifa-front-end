@@ -80,7 +80,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onLoginClick, onCloseMe
                         <LayoutGrid size={20} />
                         <span>Campanhas</span>
                     </button>
-                    <button className="mobile-nav-item">
+                    <button className="mobile-nav-item" onClick={() => { navigate('/comunicados'); onCloseMenu(); }}>
                         <Bell size={20} />
                         <span>Comunicados</span>
                     </button>

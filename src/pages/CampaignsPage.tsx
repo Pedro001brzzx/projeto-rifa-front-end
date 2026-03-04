@@ -57,10 +57,15 @@ const CampaignsPage: React.FC = () => {
                 setLoading(true);
                 setError(null);
 
-                const response = await campanhaService.listarAtivas();
-                const frontendCampaigns = mapCampanhasToFrontend(response.data.campanhas);
-
-                setCampaigns(frontendCampaigns);
+                const response = await campanhaService.listar({ page: 1, per_page: 50 });
+                const allCampaigns = mapCampanhasToFrontend(response.data.campanhas);
+                // Sort: active first, concluded after
+                const sorted = allCampaigns.sort((a, b) => {
+                    if (a.status === 'active' && b.status !== 'active') return -1;
+                    if (a.status !== 'active' && b.status === 'active') return 1;
+                    return 0;
+                });
+                setCampaigns(sorted);
             } catch (err) {
                 console.error('Erro ao buscar campanhas:', err);
                 setError('Não foi possível carregar as campanhas. Tente novamente mais tarde.');
@@ -88,7 +93,7 @@ const CampaignsPage: React.FC = () => {
     };
 
     return (
-        <>
+        <div className="app-container">
             {/* Modal de Login */}
             <LoginModal
                 isOpen={loginModalOpen}
@@ -115,7 +120,7 @@ const CampaignsPage: React.FC = () => {
             <MobileMenu isOpen={mobileMenuOpen} onLoginClick={openLoginModal} onCloseMenu={toggleMobileMenu} />
 
             {/* Main Content - Campanhas */}
-            <main>
+            <main className="main-content-wrapper">
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '3rem' }}>
                         <p>Carregando campanhas...</p>
@@ -131,13 +136,21 @@ const CampaignsPage: React.FC = () => {
                         </button>
                     </div>
                 ) : (
-                    <CampaignsList campaigns={campaigns} />
+                    <>
+                        <div style={{ padding: '0 1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
+                            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1a202c', marginBottom: '0.5rem' }}>
+                                Todas as Campanhas
+                            </h1>
+                            <p style={{ color: '#64748b' }}>Escolha sua sorte</p>
+                        </div>
+                        <CampaignsList campaigns={campaigns} />
+                    </>
                 )}
             </main>
 
             {/* Rodapé */}
             <Footer />
-        </>
+        </div>
     );
 };
 

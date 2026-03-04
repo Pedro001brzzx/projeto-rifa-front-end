@@ -62,6 +62,20 @@ O projeto utiliza **CSS Vanilla** com uma estrutura organizada.
 - **Erro 400 ao criar campanha**: ✅ **RESOLVIDO v1.1** - O sistema agora gera slugs automaticamente a partir do título.
 - **Rotas 404**: Certifique-se de que o servidor web (em produção) esteja configurado para redirecionar todas as requisições para `index.html` (SPA routing).
 
+## 🔄 Atualizações da Versão 1.2
+
+### 🏆 Gestão de Ganhadores e Premiados
+- **Gerenciamento de Títulos**: Títulos agora podem ser criados e gerenciados via Painel Admin (com valores e números específicos).
+- **Seleção de Ganhadores**: Admin pode buscar compradores e definir o ganhador de uma campanha.
+- **Página de Ganhadores**: Exibe histórico real de ganhadores (`/ganhadores`).
+- **Upload de Imagens**: Novo componente `ImageUpload` para formulários de campanha.
+
+### 🔐 Segurança e Melhorias
+- **UUIDs Públicos**: Implementação em andamento para substituir IDs sequenciais.
+- **Máscara de Dados**: Proteção de CPF e Email nas respostas da API.
+- **Obfuscação de Admin**: Rotas de admin configuráveis via `.env`.
+- **Layout**: Padronização de background e refinamentos visuais na Homepage e Detalhes.
+
 ## 🔄 Atualizações da Versão 1.1
 
 ### Configurações Importantes

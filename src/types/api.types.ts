@@ -59,7 +59,19 @@ export interface Campanha {
     percentual_vendido: number;
     data_sorteio: string;
     status: 'ativo' | 'concluido' | 'cancelado';
+    data_conclusao?: string;
+    numero_sorteado?: string;
     criado_em: string;
+    min_quantidade_compra?: number;
+    ganhador?: {
+        nome: string;
+        cidade?: string;
+        estado?: string;
+        telefone: string;
+        numero_sorteado: string;
+        premio: string;
+        data_conclusao: string;
+    };
 }
 
 export interface CampanhaParams {
@@ -146,6 +158,13 @@ export interface TituloPremiado {
     data_sorteio: string | null;
     criado_em: string;
     atualizado_em: string;
+    dono?: {
+        compra_id: number;
+        titulo_id: number;
+        usuario_id: number;
+        nome: string;
+        telefone: string;
+    } | null;
 }
 
 export interface TitulosPremiadosResponse {
@@ -196,7 +215,8 @@ export interface DadosPagamentoPix {
 
 export interface CheckoutResponse {
     mensagem: string;
-    compra_id: number;
+    compra_id: number | string;
+    public_id?: string;
     status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado' | 'expirado';
     valor_total: number;
     metodo_pagamento: string;
@@ -216,7 +236,7 @@ export interface TituloCompra {
 }
 
 export interface StatusPagamento {
-    compra_id: number;
+    compra_id: number | string;
     status_pagamento: 'pendente' | 'aprovado' | 'cancelado' | 'recusado' | 'expirado';
     metodo_pagamento: string;
     valor_total: number;

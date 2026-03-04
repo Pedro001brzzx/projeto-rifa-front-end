@@ -26,10 +26,10 @@ export const paymentService = {
 
     /**
      * Consulta status de um pagamento
-     * @param compraId - ID da compra
+     * @param compraId - ID da compra (UUID)
      * @returns Promise com status do pagamento
      */
-    consultarPagamento: async (compraId: number): Promise<AxiosResponse<StatusPagamento>> => {
+    consultarPagamento: async (compraId: string): Promise<AxiosResponse<StatusPagamento>> => {
         return await api.get<StatusPagamento>(`/api/pagamentos/${compraId}`);
     },
 
@@ -38,19 +38,19 @@ export const paymentService = {
      * @param compraId - ID da compra
      * @returns Promise com mensagem de sucesso
      */
-    aprovarPagamento: async (compraId: number): Promise<AxiosResponse<MessageResponse & { compra_id: number }>> => {
+    aprovarPagamento: async (compraId: number | string): Promise<AxiosResponse<MessageResponse & { compra_id: number }>> => {
         return await api.post(`/api/pagamentos/${compraId}/aprovar`);
     },
 
     /**
      * Helper para monitorar status de pagamento (polling)
-     * @param compraId - ID da compra
+     * @param compraId - ID da compra (UUID)
      * @param onUpdate - Callback quando status mudar
      * @param interval - Intervalo em ms (padrão: 3000)
      * @returns Função para parar o polling
      */
     monitorarPagamento: (
-        compraId: number,
+        compraId: string,
         onUpdate: (status: StatusPagamento) => void,
         interval = 3000
     ): (() => void) => {

@@ -30,7 +30,9 @@ export const mapCampanhaToFrontend = (campanha: Campanha): Campaign => {
         type: campanha.tipo,
         date: campanha.data_sorteio,
         slug: campanha.slug,
-        createdAt: campanha.criado_em
+        conclusionDate: campanha.data_conclusao,
+        createdAt: campanha.criado_em,
+        minQuantity: campanha.min_quantidade_compra || 1
     };
 };
 

@@ -11,7 +11,9 @@ import {
     ChevronDown,
     Minus,
     Plus,
-    X
+    X,
+    User,
+    Trophy
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -21,9 +23,9 @@ import PrizeTitles from '../components/PrizeTitles';
 import { useAuthContext } from '../context/AuthContext';
 import { useAuth } from '../context/AuthContext';
 import type { Campaign } from '../models/types';
-// TEMPORARILY DISABLED - Prize titles integration causing crash
-// import type { TituloPremiado } from '../types/api.types';
+import type { TituloPremiado } from '../types/api.types';
 import { campanhaService } from '../services/campaignService';
+import { prizeTitlesService } from '../services/prizeTitlesService';
 import { paymentService } from '../services/paymentService';
 import { mapCampanhaToFrontend } from '../utils/mappers';
 
@@ -47,9 +49,12 @@ const CampaignDetailsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [ticketQuantity, setTicketQuantity] = useState(1);
 
-    // TEMPORARILY DISABLED - Prize Titles State
-    // const [prizeTitles, setPrizeTitles] = useState<TituloPremiado[]>([]);
-    // const [prizeTitlesStats, setPrizeTitlesStats] = useState({ total: 0, ganhos: 0, disponiveis: 0 });
+    // Prize Titles State
+    const [prizeTitles, setPrizeTitles] = useState<TituloPremiado[]>([]);
+    const [prizeTitlesStats, setPrizeTitlesStats] = useState({ total: 0, ganhos: 0, disponiveis: 0 });
+
+    // Winner data (raw from API)
+    const [ganhador, setGanhador] = useState<any>(null);
 
     // UI States
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -89,8 +94,12 @@ const CampaignDetailsPage: React.FC = () => {
 
                 const response = await campanhaService.obterDetalhes(slug);
                 const frontendCampaign = mapCampanhaToFrontend(response.data);
-
                 setCampaign(frontendCampaign);
+
+                // Store raw ganhador data from API
+                if (response.data.ganhador) {
+                    setGanhador(response.data.ganhador);
+                }
             } catch (err) {
                 console.error('Erro ao buscar campanha:', err);
                 setError('Não foi possível carregar a campanha. Tente novamente mais tarde.');
@@ -99,47 +108,63 @@ const CampaignDetailsPage: React.FC = () => {
             }
         };
 
-        // TEMPORARILY DISABLED - Prize Titles Fetch
-        // const fetchPrizeTitles = async () => {
-        //     if (!slug) return;
-        //     try {
-        //         const data = await prizeTitlesService.getPrizeTitles(slug);
-        //         setPrizeTitles(data.titulos_premiados);
-        //         setPrizeTitlesStats({
-        //             total: data.total,
-        //             ganhos: data.ganhos,
-        //             disponiveis: data.disponiveis
-        //         });
-        //     } catch (err) {
-        //         console.error('Erro ao buscar títulos premiados:', err);
-        //     }
-        // };
+        const fetchPrizeTitles = async () => {
+            if (!slug) return;
+            try {
+                const data = await prizeTitlesService.getPrizeTitles(slug);
+                setPrizeTitles(data.titulos_premiados || []);
+                setPrizeTitlesStats({
+                    total: data.total || 0,
+                    ganhos: data.ganhos || 0,
+                    disponiveis: data.disponiveis || 0
+                });
+            } catch (err) {
+                console.error('Erro ao buscar títulos premiados:', err);
+            }
+        };
 
         fetchCampaign();
-        // fetchPrizeTitles();
+        fetchPrizeTitles();
     }, [slug]);
+
+    // Set initial ticket quantity to campaign's minimum when campaign loads
+    useEffect(() => {
+        if (campaign?.minQuantity && campaign.minQuantity > 1) {
+            setTicketQuantity(campaign.minQuantity);
+        }
+    }, [campaign?.minQuantity]);
 
     const handlePackageSelect = (count: number) => {
         if (!campaign) return;
-        const campaignLimit = campaign.availableTickets || campaign.totalTickets || Infinity;
+
+        // Calcular limite real com base na disponibilidade (total - vendidos)
+        const available = (campaign.totalTickets || 0) - (campaign.soldTickets || 0);
+        const campaignLimit = available > 0 ? available : 0;
+
         const maxTickets = Math.min(10000, campaignLimit); // Menor entre 10k e disponíveis
         setTicketQuantity(prev => Math.min(prev + count, maxTickets));
     };
 
     const handleQuantityChange = (delta: number) => {
         if (!campaign) return;
-        const campaignLimit = campaign.availableTickets || campaign.totalTickets || Infinity;
+
+        // Calcular limite real com base na disponibilidade (total - vendidos)
+        const available = (campaign.totalTickets || 0) - (campaign.soldTickets || 0);
+        const campaignLimit = available > 0 ? available : 0;
+
         const maxTickets = Math.min(10000, campaignLimit); // Menor entre 10k e disponíveis
+        const minTickets = campaign.minQuantity || 1; // Quantidade mínima da campanha
 
         setTicketQuantity(prev => {
             const newValue = prev + delta;
             if (newValue > maxTickets) return maxTickets;
-            return Math.max(1, newValue);
+            return Math.max(minTickets, newValue);
         });
     };
 
     const handleReset = () => {
-        setTicketQuantity(1);
+        const minTickets = campaign?.minQuantity || 1;
+        setTicketQuantity(minTickets);
     };
 
     const handleMyTicketsClick = () => {
@@ -169,8 +194,19 @@ const CampaignDetailsPage: React.FC = () => {
                 metodo_pagamento: 'pix',
             });
 
+            console.log("RESPOSTA CHECKOUT:", response.data);
+
+            // Robust ID extraction (prefer public_id aka UUID, fallback to compra_id)
+            const compraId = response.data.public_id || response.data.compra_id;
+
+            if (!compraId) {
+                console.error("CRITICAL: No purchase ID returned from backend", response.data);
+                alert("Erro ao processar checkout: ID da compra não retornado.");
+                return;
+            }
+
             // Redirect to checkout page with compra_id
-            navigate(`/checkout/${response.data.compra_id}`);
+            navigate(`/checkout/${compraId}`);
 
         } catch (error: any) {
             console.error('Erro ao criar checkout:', error);
@@ -258,15 +294,15 @@ const CampaignDetailsPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Hero Container - Wrapped in Box */}
-                        <div className="container">
-                            <div className="hero-container-box">
-                                {/* Hero Image */}
-                                <div className="details-hero">
-                                    <img src={campaign.image} alt={campaign.title} className="details-image" />
-                                    {campaign.status === 'active' && <div className="status-badge">Adquira Já!</div>}
-                                </div>
+                        <div className="main-content-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
+                            {/* Hero Image - Full Width in Wrapper */}
+                            <div className="details-hero">
+                                <img src={campaign.image} alt={campaign.title} className="details-image" />
+                                {campaign.status === 'active' && <div className="status-badge" style={{ top: '10px', left: '10px' }}>Adquira Já!</div>}
+                                {campaign.status === 'concluded' && <div className="concluded-badge">Rifa Realizada</div>}
+                            </div>
 
+                            <div style={{ padding: '1.5rem' }}>
                                 {/* Title Section */}
                                 <div className="details-header">
                                     <h1 className="details-title">{campaign.title}</h1>
@@ -274,7 +310,7 @@ const CampaignDetailsPage: React.FC = () => {
                                 </div>
 
                                 {/* My Titles Bar */}
-                                <div className="my-titles-bar" onClick={handleMyTicketsClick} style={{ cursor: 'pointer' }}>
+                                <div className="my-titles-bar" onClick={handleMyTicketsClick} style={{ cursor: 'pointer', marginBottom: '1.5rem' }}>
                                     <div className="flex-center">
                                         <ShoppingCart size={20} />
                                         <span>Meus títulos</span>
@@ -282,30 +318,21 @@ const CampaignDetailsPage: React.FC = () => {
                                 </div>
 
                                 {/* Campaign Info Bar */}
-                                <div className="campaign-info-bar">
+                                {/* Campaign Info Bar */}
+                                <div className="campaign-info-bar" style={{ marginBottom: '0.5rem' }}>
                                     <div className="info-item">
                                         <span className="info-label">Por apenas</span>
                                         <span className="info-value-price">R$ {campaign.price?.toFixed(2).replace('.', ',')}</span>
                                     </div>
                                 </div>
 
-
-                            </div>
-                        </div>
-
-                        {/* Instructions */}
-                        <div className="container">
-                            <div className="section-box">
-                                <div className="instruction-box">
+                                {/* Instructions */}
+                                <div className="instruction-box" style={{ marginBottom: '0.5rem' }}>
                                     Quanto mais títulos, mais chances de ganhar!
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Packages Grid */}
-                        <div className="container">
-                            <div className="section-box">
-                                <div className="packages-grid">
+                                {/* Packages Grid */}
+                                <div className="packages-grid" style={{ marginBottom: '1rem' }}>
                                     {packages.map((pkg) => (
                                         <div
                                             key={pkg.count}
@@ -318,20 +345,16 @@ const CampaignDetailsPage: React.FC = () => {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Sticky Controls Section - MOVED HERE */}
-                        <div className="container">
-                            <div className="section-box">
-                                <div className="controls-section">
+                                {/* Sticky Controls Section - Adjusted inline */}
+                                <div className="controls-section" style={{ position: 'static', padding: 0, background: 'none', boxShadow: 'none' }}>
                                     <div className="quantity-control">
                                         <button className="reset-btn" onClick={handleReset} title="Limpar quantidade"><X size={20} /></button>
                                         <button onClick={() => handleQuantityChange(-1)}><Minus size={20} /></button>
                                         <input type="text" value={ticketQuantity} readOnly />
                                         <button onClick={() => handleQuantityChange(1)}><Plus size={20} /></button>
                                     </div>
-                                    <button className="participate-btn-inline" onClick={handleParticipateClick}>
+                                    <button className="participate-btn-inline" onClick={handleParticipateClick} style={{ width: '100%' }}>
                                         <div className="btn-content-inline">
                                             <span className="btn-icon">→</span>
                                             <div className="btn-text">
@@ -341,50 +364,60 @@ const CampaignDetailsPage: React.FC = () => {
                                         </div>
                                     </button>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Description Button */}
-                        <div className="container">
-                            <div className="section-box">
-                                <button className="desc-btn">
+                                {/* Ganhadores Section - only for concluded campaigns */}
+                                {campaign.status === 'concluded' && ganhador && (
+                                    <div className="winners-concluded-section" style={{ marginTop: '1.5rem' }}>
+                                        <div className="winners-concluded-header">
+                                            <Trophy size={20} color="#f59e0b" />
+                                            <h3 className="winners-concluded-title">Ganhadores</h3>
+                                            <span className="winners-concluded-subtitle">sorteados</span>
+                                        </div>
+
+                                        <div className="winner-concluded-card">
+                                            <div className="winner-concluded-avatar">
+                                                <User size={32} strokeWidth={1.5} />
+                                            </div>
+                                            <div className="winner-concluded-info">
+                                                <h4 className="winner-concluded-name">{ganhador.nome}</h4>
+                                                <ul className="winner-concluded-details">
+                                                    <li>Prêmio: <strong>{ganhador.premio}</strong></li>
+                                                    <li>Número da sorte: <strong>{ganhador.numero_sorteado}</strong></li>
+                                                    <li>Data da premiação: <strong>{ganhador.data_conclusao}</strong></li>
+                                                    <li>Telefone: {ganhador.telefone}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Description Button */}
+                                <button className="desc-btn" style={{ marginTop: '1.5rem' }}>
                                     <ChevronDown size={20} />
                                     Descrição/Regulamento
                                 </button>
-                            </div>
-                        </div>
 
-                        {/* Progress Section */}
-                        <div className="container">
-                            <div className="section-box">
-                                <div className="progress-bar-container">
+                                {/* Progress Section */}
+                                <div className="progress-bar-container" style={{ marginTop: '1.5rem' }}>
                                     <div className="progress-bar" style={{ width: `${progress}%` }}>
                                         {progress}%
                                     </div>
                                 </div>
 
                                 {progress >= 100 && (
-                                    <div className="warning-box-yellow">
+                                    <div className="warning-box-yellow" style={{ marginTop: '1rem' }}>
                                         Todos os títulos disponíveis já foram pagos ou reservados.
                                     </div>
                                 )}
-                            </div>
-                        </div>
 
-                        {/* Prize Titles Section */}
-                        <div className="container">
-                            <div className="section-box">
-                                <PrizeTitles
-                                    prizes={[
-                                        { id: 1, campanha_id: 0, numero_titulo: "1111", valor_premio: 1000, ganhador_nome: "Maria", status: 'ganho', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
-                                        { id: 2, campanha_id: 0, numero_titulo: "222222", valor_premio: 1000, ganhador_nome: "Jackeline", status: 'ganho', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
-                                        { id: 3, campanha_id: 0, numero_titulo: "333333", valor_premio: 1000, ganhador_nome: "Sebastião", status: 'ganho', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
-                                        { id: 4, campanha_id: 0, numero_titulo: "444444", valor_premio: 1000, ganhador_nome: null, status: 'disponivel', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
-                                        { id: 5, campanha_id: 0, numero_titulo: "555555", valor_premio: 1000, ganhador_nome: null, status: 'disponivel', data_sorteio: null, criado_em: '', atualizado_em: '', ganhador_usuario_id: null },
-                                    ]}
-                                    totalCount={5}
-                                    wonCount={3}
-                                />
+                                {/* Prize Titles Section */}
+                                <div style={{ marginTop: '2rem' }}>
+                                    <PrizeTitles
+                                        prizes={prizeTitles}
+                                        totalCount={prizeTitlesStats.total}
+                                        wonCount={prizeTitlesStats.ganhos}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </>
