@@ -8,6 +8,7 @@ export interface Campaign {
     title: string;
     subtitle: string;
     description?: string;
+    regulamento?: string;
     image: string;
     status: 'active' | 'concluded';
     price: number;
@@ -24,6 +25,7 @@ export interface Campaign {
     createdAt?: string;
     minQuantity?: number;
 }
+
 
 export interface FAQ {
     question: string;

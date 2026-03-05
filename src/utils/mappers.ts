@@ -10,14 +10,17 @@ import type { Campaign } from '../models/types';
  * Mapeia dados de campanha da API para interface do frontend
  */
 export const mapCampanhaToFrontend = (campanha: Campanha): Campaign => {
-    // Extrair primeira linha da descrição como subtitle
-    const subtitle = campanha.descricao.split('\n')[0].substring(0, 100);
+    // Extrair primeira linha da descrição como subtitle (guard against null)
+    const subtitle = campanha.descricao
+        ? campanha.descricao.split('\n')[0].substring(0, 100)
+        : '';
 
     return {
         id: campanha.id,
         title: campanha.titulo,
         subtitle: subtitle || campanha.titulo,
         description: campanha.descricao,
+        regulamento: campanha.regulamento,
         image: campanha.imagem_principal,
         price: campanha.valor_titulo,
         totalTickets: campanha.total_titulos,

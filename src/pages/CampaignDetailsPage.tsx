@@ -1,9 +1,4 @@
 
-/**
- * Página de Detalhes da Campanha
- * View Layer - MVC Pattern
- */
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -30,6 +25,66 @@ import { paymentService } from '../services/paymentService';
 import { mapCampanhaToFrontend } from '../utils/mappers';
 
 import '../App.css'; // Garantir estilos globais
+
+// -------------------------------------------------------
+// Accordion de Descrição/Regulamento
+// -------------------------------------------------------
+interface AccordionProps {
+    title: string;
+    content: string;
+}
+
+const DescriptionAccordion: React.FC<AccordionProps> = ({ title, content }) => {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '0.75rem', overflow: 'hidden' }}>
+            <button
+                onClick={() => setOpen(prev => !prev)}
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.875rem 1rem',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    color: '#1f2937',
+                    textAlign: 'left',
+                }}
+            >
+                <span>{title}</span>
+                <ChevronDown
+                    size={18}
+                    style={{
+                        transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease',
+                        flexShrink: 0,
+                    }}
+                />
+            </button>
+            {open && (
+                <div
+                    style={{
+                        padding: '0 1rem 1rem',
+                        color: '#4b5563',
+                        fontSize: '0.9rem',
+                        lineHeight: 1.7,
+                        whiteSpace: 'pre-wrap',
+                        borderTop: '1px solid #e5e7eb',
+                        paddingTop: '0.75rem',
+                    }}
+                >
+                    {content}
+                </div>
+            )}
+        </div>
+    );
+};
+
 
 const CampaignDetailsPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -391,11 +446,23 @@ const CampaignDetailsPage: React.FC = () => {
                                     </div>
                                 )}
 
-                                {/* Description Button */}
-                                <button className="desc-btn" style={{ marginTop: '1.5rem' }}>
-                                    <ChevronDown size={20} />
-                                    Descrição/Regulamento
-                                </button>
+                                {/* Description / Regulation Section */}
+                                {(campaign.description || campaign.regulamento) && (
+                                    <div style={{ marginTop: '1.5rem' }}>
+                                        {campaign.description && (
+                                            <DescriptionAccordion
+                                                title="Descrição"
+                                                content={campaign.description}
+                                            />
+                                        )}
+                                        {campaign.regulamento && (
+                                            <DescriptionAccordion
+                                                title="Regulamento"
+                                                content={campaign.regulamento}
+                                            />
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Progress Section */}
                                 <div className="progress-bar-container" style={{ marginTop: '1.5rem' }}>

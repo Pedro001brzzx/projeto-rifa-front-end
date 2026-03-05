@@ -45,10 +45,12 @@ export interface AuthResponse {
 
 export interface Campanha {
     id: number;
+    public_id?: string;
     codigo: string;
     titulo: string;
     slug: string;
     descricao: string;
+    regulamento?: string;
     tipo: string;
     premio: string;
     imagem_principal: string;
@@ -58,11 +60,13 @@ export interface Campanha {
     titulos_disponiveis: number;
     percentual_vendido: number;
     data_sorteio: string;
+    data_fim?: string;
     status: 'ativo' | 'concluido' | 'cancelado';
     data_conclusao?: string;
     numero_sorteado?: string;
     criado_em: string;
     min_quantidade_compra?: number;
+    max_quantidade_compra?: number;
     ganhador?: {
         nome: string;
         cidade?: string;
